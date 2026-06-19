@@ -1,546 +1,1020 @@
+```html
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-
-<title>TEAMBKIT — RTBTS | Cinematic Liquid Showroom</title>
-<meta name="description" content="TEAMBKIT is a Korean car culture brand where music becomes machine. RTBTS means Race To Be The Star. Track to Machine connects music, cars, apparel, offline space, and digital automotive culture." />
-<meta name="robots" content="index, follow" />
-<link rel="canonical" href="https://teambkit.com/" />
-
-<meta property="og:title" content="TEAMBKIT — RTBTS" />
-<meta property="og:description" content="Where sound becomes speed. TEAM BKIT turns music, cars, apparel, and digital culture into cinematic automotive stories." />
-<meta property="og:url" content="https://teambkit.com/" />
-<meta property="og:type" content="website" />
-<meta property="og:site_name" content="TEAMBKIT" />
-<meta name="theme-color" content="#07030d" />
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
-
-<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/Pass.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/instrument-serif@5.0.0/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/instrument-serif@5.0.0/400-italic.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/300.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/400.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/900.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.8/index.css" />
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "TEAMBKIT",
-  "alternateName": "TEAM BKIT",
-  "url": "https://teambkit.com/",
-  "slogan": "Race To Be The Star",
-  "description": "TEAMBKIT is a Korean car culture brand connecting music, cars, visual storytelling, apparel, offline space, and digital automotive culture."
-}
-</script>
-
-<style>
-:root {
-  --black: #07030d;
-  --black2: #0d0618;
-  --cream: #f8eadc;
-  --muted: rgba(248,234,220,.62);
-  --faint: rgba(248,234,220,.34);
-  --line: rgba(248,234,220,.15);
-  --peach: #ffb5a7;
-  --peach2: #ff8e78;
-  --rose: #ff5f9f;
-  --violet: #7257ff;
-  --blue: #9fd6ff;
-  --gold: #f4c06f;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html { background: var(--black); scroll-behavior: auto; }
-body {
-  min-height: 100vh;
-  background: var(--black);
-  color: var(--cream);
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
-}
-@media (hover:hover) { body { cursor: none; } }
-::selection { background: rgba(255,181,167,.34); color: white; }
-a { color: inherit; text-decoration: none; }
-button { font: inherit; color: inherit; }
-
-.sans { font-family: 'Inter', sans-serif; font-weight: 900; letter-spacing: -.07em; }
-.serif { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; }
-.mono { font-family: 'JetBrains Mono', monospace; }
-
-#bg-canvas,
-#world-canvas {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100vh;
-  pointer-events: none;
-}
-#bg-canvas {
-  z-index: 0;
-  background:
-    radial-gradient(circle at 78% 16%, rgba(255,181,167,.34), transparent 34%),
-    radial-gradient(circle at 17% 82%, rgba(114,87,255,.26), transparent 43%),
-    radial-gradient(circle at 50% 48%, rgba(159,214,255,.09), transparent 42%),
-    var(--black);
-}
-#world-canvas { z-index: 2; opacity: 1; filter: saturate(1.08) contrast(1.02); }
-
-.layer { position: relative; z-index: 6; }
-.vignette {
-  position: fixed; inset: 0; z-index: 3; pointer-events: none;
-  background:
-    radial-gradient(circle at center, transparent 30%, rgba(0,0,0,.31) 70%, rgba(0,0,0,.72) 100%),
-    linear-gradient(180deg, rgba(0,0,0,.24), transparent 24%, transparent 65%, rgba(0,0,0,.42));
-}
-.scanlines {
-  position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: .075;
-  background:
-    repeating-linear-gradient(to bottom, transparent 0 10px, rgba(255,255,255,.08) 11px),
-    linear-gradient(90deg, rgba(255,95,159,.1), transparent 17%, transparent 84%, rgba(159,214,255,.12));
-  mix-blend-mode: screen;
-}
-.grain {
-  position: fixed; inset: 0; z-index: 95; pointer-events: none; opacity: .078; mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 360 360' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.74'/%3E%3C/svg%3E");
-}
-.progress { position: fixed; top: 0; left: 0; width: 0%; height: 2px; z-index: 9997; background: linear-gradient(90deg,var(--peach),var(--rose),var(--blue)); box-shadow: 0 0 26px rgba(255,181,167,.8); }
-
-.cursor-dot,.cursor-ring,.cursor-glow { position: fixed; pointer-events: none; transform: translate(-50%,-50%); }
-.cursor-dot { z-index: 10000; width: 5px; height: 5px; border-radius: 999px; background: var(--peach); box-shadow: 0 0 18px var(--peach), 0 0 42px var(--rose); }
-.cursor-ring { z-index: 9999; width: 42px; height: 42px; border: 1px solid rgba(248,234,220,.68); border-radius: 999px; mix-blend-mode: difference; transition: width .35s ease, height .35s ease, border-color .35s ease, background .35s ease; }
-.cursor-ring.hover { width: 92px; height: 92px; border-color: var(--peach); background: rgba(255,181,167,.08); }
-.cursor-glow { z-index: 1; width: 820px; height: 820px; border-radius: 999px; background: radial-gradient(circle, rgba(255,181,167,.2), rgba(114,87,255,.10) 36%, transparent 72%); mix-blend-mode: screen; }
-
-.loader {
-  position: fixed; inset: 0; z-index: 10001; display: grid; place-items: center;
-  background: radial-gradient(circle at 70% 26%, rgba(255,181,167,.25), transparent 42%), radial-gradient(circle at 22% 84%, rgba(114,87,255,.25), transparent 48%), var(--black);
-  transition: opacity .9s cubic-bezier(.7,0,.3,1), visibility .9s;
-}
-.loader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
-.loader-inner { width: min(680px, 86vw); }
-.loader-top,.loader-bottom { display: flex; justify-content: space-between; gap: 1rem; font-size: 10px; letter-spacing: .46em; opacity: .52; }
-.loader-num { font-family: 'Instrument Serif', serif; font-style: italic; font-size: clamp(96px,23vw,330px); line-height: .82; letter-spacing: -.07em; margin: 34px 0 28px; }
-.loader-bar { height: 1px; background: rgba(248,234,220,.16); overflow: hidden; }
-.loader-fill { width: 0%; height: 100%; background: linear-gradient(90deg,var(--peach),var(--rose),var(--blue)); box-shadow: 0 0 28px rgba(255,181,167,.9); transition: width .24s ease; }
-.loader-bottom { margin-top: 20px; }
-
-.nav { position: fixed; inset: 0 0 auto 0; z-index: 550; padding: 24px 30px; pointer-events: none; }
-.nav-inner { display: flex; align-items: center; justify-content: space-between; pointer-events: auto; }
-.logo { font-size: 11px; letter-spacing: .42em; }
-.logo span { color: var(--peach); }
-.nav-chip {
-  padding: 13px 16px; border: 1px solid var(--line); border-radius: 999px;
-  background: linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.018)), rgba(14,8,26,.44);
-  backdrop-filter: blur(22px) saturate(175%); -webkit-backdrop-filter: blur(22px) saturate(175%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 18px 54px rgba(0,0,0,.26);
-  font-size: 10px; letter-spacing: .32em; opacity: .72;
-}
-.menu-btn {
-  width: 58px; height: 58px; display: grid; place-items: center; border-radius: 999px; border: 1px solid var(--line);
-  background: linear-gradient(145deg, rgba(255,255,255,.09), rgba(255,255,255,.02)), rgba(14,8,26,.48);
-  backdrop-filter: blur(22px) saturate(178%); -webkit-backdrop-filter: blur(22px) saturate(178%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 18px 54px rgba(0,0,0,.26);
-  transition: transform .35s ease, border-color .35s ease;
-}
-.menu-btn:hover { transform: scale(1.07) rotate(90deg); border-color: rgba(255,181,167,.45); }
-.menu-btn i { width: 19px; height: 1px; background: var(--cream); display: block; position: relative; }
-.menu-btn i::before,.menu-btn i::after { content:''; position:absolute; left:0; width:19px; height:1px; background: var(--cream); transition: transform .38s cubic-bezier(.7,0,.3,1); }
-.menu-btn i::before { top:-7px; } .menu-btn i::after { top:7px; }
-.menu-btn.active i { background: transparent; }
-.menu-btn.active i::before { transform: translateY(7px) rotate(45deg); }
-.menu-btn.active i::after { transform: translateY(-7px) rotate(-45deg); }
-.menu-overlay {
-  position: fixed; inset: 0; z-index: 500; opacity: 0; visibility: hidden; pointer-events: none;
-  background: radial-gradient(circle at 78% 16%, rgba(255,181,167,.16), transparent 36%), radial-gradient(circle at 18% 82%, rgba(114,87,255,.18), transparent 44%), rgba(7,3,13,.72);
-  backdrop-filter: blur(38px) saturate(175%); -webkit-backdrop-filter: blur(38px) saturate(175%);
-  transition: opacity .55s ease, visibility .55s ease;
-}
-.menu-overlay.open { opacity: 1; visibility: visible; pointer-events: all; }
-.menu-list { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 9vw 7vw; }
-.menu-item { border-top: 1px solid rgba(248,234,220,.14); padding: 27px 0; display: flex; align-items: flex-end; justify-content: space-between; cursor: pointer; transition: padding-left .4s ease, border-color .4s ease; }
-.menu-item:hover { padding-left: 26px; border-color: rgba(255,181,167,.35); }
-.menu-item:last-child { border-bottom: 1px solid rgba(248,234,220,.14); }
-.menu-title { font-size: clamp(3rem,9.7vw,8.6rem); line-height: .86; }
-.menu-title .serif { color: var(--peach); }
-
-.liquid {
-  background: linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.022)), rgba(15,8,29,.46);
-  backdrop-filter: blur(40px) saturate(190%); -webkit-backdrop-filter: blur(40px) saturate(190%);
-  border-top: 1px solid rgba(248,234,220,.16); border-bottom: 1px solid rgba(248,234,220,.08);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.115), inset 0 -1px 0 rgba(255,255,255,.035), 0 -54px 140px rgba(255,181,167,.06);
-}
-.card {
-  position: relative; overflow: hidden; border: 1px solid rgba(248,234,220,.14);
-  background: linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.019)), rgba(20,10,37,.49);
-  backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.11), 0 30px 105px rgba(0,0,0,.36);
-  transform-style: preserve-3d;
-}
-.card::before { content:''; position:absolute; inset:0; opacity:0; pointer-events:none; background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,181,167,.24), transparent 36%); transition: opacity .35s ease; }
-.card:hover::before { opacity: 1; }
-
-.hero { min-height: 100vh; padding: 96px 6vw 48px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
-.hero-row { display: flex; justify-content: space-between; align-items: center; font-size: 10px; letter-spacing: .38em; opacity: .68; }
-.hero-center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; flex: 1; }
-.hero-kicker { font-size: 10px; letter-spacing: .62em; opacity: .74; margin-bottom: 30px; }
-.hero-title { font-size: clamp(4.6rem,18.5vw,25rem); line-height: .755; letter-spacing: -.08em; }
-.hero-title .serif { color: var(--peach); letter-spacing: -.045em; }
-.hero-sub { margin-top: 36px; display: flex; align-items: center; gap: 22px; }
-.hero-sub i { display:block; width: min(118px, 17vw); height:1px; background: linear-gradient(90deg, transparent, var(--peach)); box-shadow: 0 0 18px rgba(255,181,167,.45); }
-.hero-sub i:last-child { background: linear-gradient(90deg, var(--peach), transparent); }
-.hero-sub p { font-size: clamp(1.5rem,3vw,3.4rem); }
-.hero-copy { margin-top: 36px; max-width: 720px; color: rgba(248,234,220,.64); line-height: 1.75; font-size: clamp(.9rem,1.2vw,1.05rem); }
-.scroll-cue { display: flex; justify-content: space-between; align-items: flex-end; font-size: 10px; letter-spacing: .32em; opacity: .72; }
-.scroll-stick { margin-top: 10px; width: 1px; height: 56px; overflow: hidden; background: rgba(248,234,220,.18); }
-.scroll-stick span { display:block; width: 100%; height: 52%; background: linear-gradient(180deg,var(--peach),var(--blue)); animation: scrollDown 2s infinite; }
-
-.machine { min-height: 540vh; position: relative; }
-.sticky-scene { position: sticky; top: 0; height: 100vh; pointer-events: none; }
-.scene-title { position:absolute; top: 96px; left: 6vw; }
-.overline { font-size: 10px; letter-spacing: .48em; opacity: .56; margin-bottom: 20px; }
-.scene-title h2 { font-size: clamp(2.6rem,5vw,6.4rem); line-height: .92; }
-.scene-caption { position:absolute; right: 6vw; bottom: 56px; text-align: right; max-width: 640px; }
-.scene-caption small { display:block; font-size: 10px; letter-spacing: .42em; opacity:.55; margin-bottom:18px; }
-.scene-caption h3 { font-size: clamp(3rem,7vw,8rem); line-height: .82; }
-
-.chapter { min-height: 116vh; display: flex; align-items: center; padding: 8rem 6vw; position: relative; overflow: hidden; }
-.chapter.left { justify-content: flex-start; }
-.chapter.right { justify-content: flex-end; text-align: right; }
-.chapter::after { content:''; position:absolute; inset:0; pointer-events:none; opacity:.82; background: radial-gradient(circle at 20% 50%, rgba(255,181,167,.12), transparent 34%), radial-gradient(circle at 80% 48%, rgba(159,214,255,.10), transparent 38%); }
-.chapter-copy { width: min(880px,92vw); position: relative; z-index:2; }
-.chapter-title { font-size: clamp(4.3rem,13vw,15.4rem); line-height: .77; letter-spacing: -.078em; text-transform: uppercase; }
-.chapter-title .serif { color: var(--peach); letter-spacing: -.04em; }
-.chapter-line { margin-top: 28px; max-width: 560px; color: rgba(248,234,220,.65); font-size: clamp(1rem,1.7vw,1.45rem); line-height: 1.55; }
-.chapter.right .chapter-line { margin-left:auto; }
-.hud,.list-hud,.product-hud,.soon-hud {
-  position: absolute; z-index: 3; border: 1px solid rgba(248,234,220,.14);
-  background: linear-gradient(145deg, rgba(255,255,255,.09), rgba(255,255,255,.018)), rgba(18,9,33,.48);
-  backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 24px 90px rgba(0,0,0,.34);
-  font-size: 10px; letter-spacing: .31em; color: rgba(248,234,220,.69);
-}
-.hud { left: 6vw; bottom: 7vh; width: min(460px,86vw); display: flex; justify-content: space-between; gap: 16px; padding: 1.1rem 1.25rem; }
-.list-hud { left: 6vw; bottom: 7vh; display: grid; gap: .78rem; padding: 1.2rem 1.35rem; text-align: left; }
-.product-hud { right: 6vw; bottom: 7vh; width: min(540px,88vw); display: grid; grid-template-columns: repeat(3,1fr); overflow: hidden; }
-.product-hud div { padding: 1.15rem 1rem; text-align:center; border-right: 1px solid rgba(248,234,220,.12); }
-.product-hud div:last-child { border-right:0; }
-.soon-hud { left: 6vw; bottom: 7vh; padding: 1.15rem 1.35rem; }
-.grid-bg { position:absolute; inset:0; z-index:0; opacity:.35; background-image: linear-gradient(rgba(248,234,220,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(248,234,220,.09) 1px, transparent 1px); background-size: 58px 58px; mask-image: linear-gradient(to bottom, transparent, black 16%, black 78%, transparent); }
-.finale { min-height: 106vh; display:grid; place-items:center; text-align:center; padding: 8rem 6vw; }
-.finale-title { font-size: clamp(6rem,22vw,29rem); line-height: .74; letter-spacing: -.08em; }
-.finale-sub { margin-top: 2rem; font-size: clamp(1.8rem,4vw,4.3rem); color: var(--peach); }
-.footer { min-height: 74vh; display:grid; place-items:center; text-align:center; padding: 6rem 6vw; background: rgba(7,3,13,.60); backdrop-filter: blur(32px) saturate(165%); -webkit-backdrop-filter: blur(32px) saturate(165%); }
-.footer-logo { font-size: clamp(5rem,18vw,20rem); line-height:.76; letter-spacing:-.08em; }
-.footer-logo span { color: var(--peach); }
-.footer-meta { margin-top: 2rem; font-size: 10px; letter-spacing:.34em; opacity:.56; }
-.seo { position:absolute; left:50%; bottom: 2rem; transform:translateX(-50%); width:min(800px,88vw); font-size:12px; line-height:1.7; color: rgba(248,234,220,.28); }
-
-@keyframes scrollDown { 0%{transform:translateY(-120%)} 100%{transform:translateY(220%)} }
-@media (max-width: 768px) {
-  .cursor-dot,.cursor-ring,.cursor-glow { display:none; }
-  .nav { padding: 16px; }
-  .nav-chip { display:none; }
-  .hero { padding: 90px 1.3rem 34px; }
-  .hero-row { font-size: 9px; letter-spacing: .22em; }
-  .hero-title { font-size: clamp(4.1rem,22vw,9rem); }
-  .hero-sub { gap: 12px; }
-  .chapter { min-height: 112vh; padding: 7rem 1.3rem; }
-  .chapter.right { text-align:left; justify-content:flex-start; }
-  .chapter.right .chapter-line { margin-left:0; }
-  .chapter-title { font-size: clamp(4rem,19vw,8.8rem); }
-  .hud,.list-hud,.product-hud,.soon-hud { left:1.3rem; right:1.3rem; bottom:2rem; width:auto; }
-  .product-hud { grid-template-columns: 1fr; }
-  .product-hud div { border-right:0; border-bottom:1px solid rgba(248,234,220,.12); }
-  .product-hud div:last-child { border-bottom:0; }
-  .scene-title { top: 90px; left: 1.3rem; }
-  .scene-caption { right: 1.3rem; bottom: 38px; }
-  .menu-item { flex-direction:column; align-items:flex-start; gap: 14px; }
-  .seo { display:none; }
-}
-@media (prefers-reduced-motion: reduce) { * { animation-duration:.001ms!important; transition-duration:.001ms!important; scroll-behavior:auto!important; } }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,maximum-scale=1.0,user-scalable=no">
+  <title>TEAMBKIT — RACE TO BE THE STAR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800;900&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --safe-bottom:env(safe-area-inset-bottom,0px);
+      --safe-top:env(safe-area-inset-top,0px);
+      --safe-left:env(safe-area-inset-left,0px);
+      --safe-right:env(safe-area-inset-right,0px);
+      --ink:#20130d;
+      --ink-soft:rgba(32,19,13,.68);
+      --cream:#fff7ef;
+      --cream-glass:rgba(255,248,240,.58);
+      --cream-glass-strong:rgba(255,248,240,.82);
+      --peach:#f2b99a;
+      --peach-deep:#d58a68;
+      --rose:#c99e8c;
+      --champagne:#c89b6b;
+      --lavender:#b9a4c8;
+      --espresso:#160e0a;
+      --border:rgba(60,26,10,.12);
+      --font-display:'Cormorant Garamond','Instrument Serif',Georgia,serif;
+      --font-serif:'Instrument Serif',Georgia,serif;
+      --font-sans:'Inter','SF Pro Display','Helvetica Neue',Arial,sans-serif;
+      --font-mono:'SF Mono','Cascadia Code','Consolas','Menlo',monospace;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scrollbar-width:none;-ms-overflow-style:none;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-text-size-adjust:100%;background:#f6dac4}
+    html::-webkit-scrollbar{display:none}
+    body{
+      min-height:100vh;min-height:100dvh;overflow-x:hidden;
+      font-family:var(--font-sans);color:var(--ink);cursor:default;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+      background:#1a0d08;
+    }
+    body.panel-open{overflow:hidden;touch-action:none}
+    #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+    #three-canvas{position:fixed;inset:0;z-index:1;pointer-events:none}
+    .grain{
+      position:fixed;inset:0;z-index:4;pointer-events:none;opacity:.055;mix-blend-mode:overlay;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size:180px 180px;
+    }
+    .vignette{
+      position:fixed;inset:0;z-index:3;pointer-events:none;
+      background:radial-gradient(ellipse at center, transparent 40%, rgba(26,13,8,.55) 100%);
+    }
+    .lenis-wrapper{position:relative;z-index:5;pointer-events:none}
+    .lenis-wrapper>*{pointer-events:auto}
+    .fixed-brand{
+      position:fixed;top:calc(22px + var(--safe-top));left:calc(28px + var(--safe-left));z-index:120;
+      font-family:var(--font-display);font-weight:700;font-style:italic;font-size:clamp(14px,1.3vw,18px);letter-spacing:.2em;
+      color:var(--cream);mix-blend-mode:difference;text-transform:uppercase;pointer-events:none;
+    }
+    .fixed-ig{
+      position:fixed;top:calc(23px + var(--safe-top));right:calc(28px + var(--safe-right));z-index:120;
+      display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;
+      color:var(--cream);text-decoration:none;opacity:.86;mix-blend-mode:difference;transition:opacity .35s;pointer-events:auto;
+    }
+    .fixed-ig:hover{opacity:1}
+    .ig-dot{width:6px;height:6px;border-radius:50%;background:#ffd8c6;box-shadow:0 0 12px #ffd8c6;animation:pulse 2.2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.55)}}
+    .scene-label{
+      position:fixed;bottom:calc(110px + var(--safe-bottom));left:calc(24px + var(--safe-left));z-index:115;
+      font-family:var(--font-mono);font-size:8px;letter-spacing:.38em;color:var(--peach);opacity:.68;mix-blend-mode:difference;
+      pointer-events:none;text-transform:uppercase;transition:opacity .55s;
+    }
+    .model-status{
+      position:fixed;top:calc(62px + var(--safe-top));left:50%;transform:translateX(-50%);z-index:135;
+      font-family:var(--font-mono);font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--peach);
+      background:rgba(26,13,8,.6);border:1px solid rgba(255,216,198,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      border-radius:999px;padding:8px 16px;opacity:0;pointer-events:none;transition:.5s;mix-blend-mode:normal;
+    }
+    .model-status.show{opacity:.95}
+    .command-dock{
+      position:fixed;left:50%;bottom:calc(15px + var(--safe-bottom));transform:translateX(-50%);z-index:130;
+      display:flex;gap:4px;padding:8px 10px;border-radius:28px;
+      background:rgba(26,13,8,.55);backdrop-filter:blur(24px) saturate(165%);-webkit-backdrop-filter:blur(24px) saturate(165%);
+      border:1px solid rgba(255,216,198,.12);box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,216,198,.08);
+      pointer-events:auto;
+    }
+    .dock-item{
+      font-family:var(--font-mono);font-size:8px;letter-spacing:.16em;color:var(--cream);opacity:.6;border:0;background:transparent;
+      border-radius:18px;padding:8px 13px;text-transform:uppercase;white-space:nowrap;cursor:pointer;transition:.35s cubic-bezier(.22,1,.36,1);
+    }
+    .dock-item:hover{opacity:1;background:rgba(255,181,167,.08)}
+    .dock-item.active{opacity:1;color:var(--peach);background:rgba(255,181,167,.14);box-shadow:0 0 22px rgba(255,181,167,.18)}
+    section{position:relative;z-index:5;min-height:100vh;min-height:100dvh;display:flex;align-items:center;padding:64px 36px}
+    .hero-section{justify-content:flex-end;padding-bottom:144px}
+    .hero-inner{max-width:1080px}
+    .hero-brand{
+      font-family:var(--font-display);font-weight:700;font-size:clamp(58px,11.4vw,164px);line-height:.76;letter-spacing:.012em;color:var(--cream);
+      text-shadow:0 22px 78px rgba(255,181,167,.28),0 0 180px rgba(200,155,107,.15);
+    }
+    .hero-brand .thin{font-weight:400;font-style:italic;color:var(--peach)}
+    .hero-slogan{margin-top:18px;font-size:clamp(12px,1.7vw,18px);letter-spacing:.34em;text-transform:uppercase;color:var(--peach);font-weight:500}
+    .hero-sub{font-family:var(--font-mono);font-size:clamp(9px,1vw,12px);letter-spacing:.24em;opacity:.7;margin-top:8px;color:var(--cream)}
+    .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+    .hero-cta{
+      font-family:var(--font-mono);font-size:10px;letter-spacing:.17em;text-transform:uppercase;border-radius:999px;
+      border:1px solid rgba(255,216,198,.18);background:rgba(26,13,8,.35);color:var(--cream);padding:11px 22px;
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);cursor:pointer;transition:.38s cubic-bezier(.22,1,.36,1);
+    }
+    .hero-cta:hover{transform:translateY(-3px);background:rgba(26,13,8,.55);border-color:rgba(255,181,167,.4);box-shadow:0 20px 48px rgba(255,181,167,.12)}
+    .hero-cta.primary{color:var(--peach);border-color:rgba(255,181,167,.4);background:rgba(255,181,167,.1)}
+    .block{width:100%;max-width:950px;margin:0 auto}
+    .section-label{font-family:var(--font-mono);font-size:9px;letter-spacing:.38em;color:var(--peach);opacity:.8;text-transform:uppercase;margin-bottom:28px}
+    .title-large{font-family:var(--font-display);font-weight:600;font-size:clamp(34px,5.8vw,78px);line-height:.95;letter-spacing:.012em;color:var(--cream);text-shadow:0 12px 40px rgba(255,181,167,.15)}
+    .title-large em{font-style:italic;color:var(--peach)}
+    .soft-copy{max-width:620px;line-height:1.75;font-size:13px;opacity:.72;margin-top:18px;letter-spacing:.015em;color:var(--cream)}
+    .track-list{display:flex;flex-direction:column;width:100%;max-width:780px}
+    .track-item{
+      display:grid;grid-template-columns:44px minmax(150px,1fr) minmax(130px,.8fr) 88px;gap:18px;align-items:baseline;padding:18px 10px;
+      border-bottom:1px solid rgba(255,216,198,.1);border-radius:8px;cursor:pointer;transition:.45s cubic-bezier(.22,1,.36,1);
+    }
+    .track-item:hover{padding-left:20px;background:rgba(255,181,167,.04);border-bottom-color:rgba(255,181,167,.3)}
+    .track-num,.track-mood{font-family:var(--font-mono);font-size:10px;color:var(--peach);opacity:.75}
+    .track-title{font-family:var(--font-display);font-style:italic;font-size:clamp(18px,2.6vw,31px);font-weight:600;color:var(--cream)}
+    .track-car{font-size:13px;opacity:.72;color:var(--cream)}.track-mood{text-align:right;font-style:italic;color:var(--peach)}
+    .machine-hud{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-around;padding:86px 42px;pointer-events:none}
+    .machine-hud span{font-family:var(--font-mono);font-size:9px;letter-spacing:.32em;color:var(--peach);opacity:.55;text-transform:uppercase}
+    .machine-hud span:nth-child(odd){align-self:flex-start}.machine-hud span:nth-child(even){align-self:flex-end}
+    .shop-section,.match-section,.proof-section,.space-section{flex-direction:column;align-items:center;gap:34px;text-align:center}
+    .shop-grid,.match-options,.proof-blocks{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;width:100%;max-width:950px}
+    .shop-tile,.proof-block,.match-option{
+      background:rgba(26,13,8,.45);border:1px solid rgba(255,216,198,.12);border-radius:20px;
+      backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
+      box-shadow:0 20px 55px rgba(0,0,0,.35);transition:.45s cubic-bezier(.22,1,.36,1);cursor:pointer;color:var(--cream);
+    }
+    .shop-tile{padding:26px 20px;text-align:left;position:relative;overflow:hidden;flex:1;min-width:150px}
+    .shop-tile:hover,.proof-block:hover,.match-option:hover{transform:translateY(-6px);background:rgba(26,13,8,.6);border-color:rgba(255,181,167,.3);box-shadow:0 30px 70px rgba(0,0,0,.5),0 0 40px rgba(255,181,167,.08)}
+    .shop-tile::after{content:'→';position:absolute;right:18px;top:50%;transform:translateY(-50%);opacity:.4;transition:.35s;color:var(--peach)}
+    .shop-tile:hover::after{right:14px;opacity:.95}
+    .shop-name{font-family:var(--font-display);font-style:italic;font-size:22px;font-weight:600;color:var(--cream)}
+    .shop-status{font-family:var(--font-mono);font-size:8px;letter-spacing:.25em;color:var(--peach);text-transform:uppercase;margin-top:6px;opacity:.8}
+    .match-option{flex:1;min-width:220px;max-width:320px;padding:32px 24px;text-align:center}
+    .match-option.selected{border-color:rgba(255,181,167,.5);background:rgba(255,181,167,.1);box-shadow:0 0 45px rgba(255,181,167,.15)}
+    .match-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.24em;color:var(--peach);text-transform:uppercase}
+    .match-name{font-family:var(--font-display);font-style:italic;font-size:28px;margin-top:10px;color:var(--cream)}
+    .match-percentage{font-family:var(--font-display);font-weight:600;font-style:italic;font-size:48px;color:var(--peach);margin-top:12px;opacity:0;transition:.6s}
+    .match-percentage.show{opacity:1}
+    .reset-btn{border:0;background:transparent;font-family:var(--font-mono);font-size:9px;letter-spacing:.22em;opacity:.55;cursor:pointer;padding:10px;color:var(--cream)}
+    .reset-btn:hover{opacity:1;color:var(--peach)}
+    .proof-block{flex:1;min-width:170px;max-width:240px;padding:30px 22px;text-align:center}
+    .proof-step{font-family:var(--font-mono);font-size:8px;letter-spacing:.36em;color:var(--peach);opacity:.75}
+    .proof-name{font-family:var(--font-display);font-style:italic;font-size:25px;font-weight:600;margin-top:8px;color:var(--cream)}
+    .proof-desc{font-size:11px;opacity:.62;margin-top:6px;color:var(--cream)}
+    .offline-form{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:430px;width:100%}
+    .offline-input{flex:1;min-width:190px;border-radius:999px;border:1px solid rgba(255,216,198,.18);background:rgba(26,13,8,.4);padding:13px 18px;color:var(--cream);outline:0;font-family:var(--font-sans);font-size:13px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .offline-input::placeholder{color:rgba(255,216,198,.4)}
+    .offline-input:focus{border-color:var(--peach);box-shadow:0 0 20px rgba(255,181,167,.18)}
+    .offline-btn{border:1px solid rgba(255,181,167,.4);border-radius:999px;background:rgba(255,181,167,.1);color:var(--peach);padding:13px 26px;font-family:var(--font-mono);font-size:10px;letter-spacing:.17em;text-transform:uppercase;cursor:pointer;transition:.4s}
+    .offline-btn:hover{background:rgba(255,181,167,.2);box-shadow:0 0 30px rgba(255,181,167,.25)}
+    .offline-btn.registered{opacity:.55;pointer-events:none}
+    footer{position:relative;z-index:5;text-align:center;padding:44px 32px;border-top:1px solid rgba(255,216,198,.08);background:rgba(26,13,8,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+    .footer-brand{font-family:var(--font-display);font-style:italic;font-size:24px;font-weight:700;letter-spacing:.18em;color:var(--cream)}
+    .footer-sub{font-family:var(--font-mono);font-size:9px;letter-spacing:.26em;opacity:.55;margin-top:8px;color:var(--cream)}
+    .footer-ig{font-family:var(--font-mono);font-size:9px;color:var(--peach);opacity:.8;text-decoration:none;display:inline-block;margin-top:12px}
+    .panel-overlay{position:fixed;inset:0;z-index:145;background:rgba(10,5,3,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:.42s}
+    .panel-overlay.active{opacity:1;pointer-events:auto}
+    .detail-panel{position:fixed;top:0;right:0;z-index:150;width:460px;max-width:92vw;height:100vh;height:100dvh;background:rgba(26,13,8,.88);border-left:1px solid rgba(255,216,198,.12);box-shadow:-24px 0 80px rgba(0,0,0,.5);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);color:var(--cream);display:flex;flex-direction:column;gap:20px;padding:46px 32px;overflow-y:auto;transform:translateX(105%);transition:.55s cubic-bezier(.22,1,.36,1);pointer-events:auto}
+    .detail-panel.open{transform:translateX(0)}
+    .modal{position:fixed;left:50%;top:50%;z-index:155;transform:translate(-50%,-50%) scale(.92);width:min(430px,92vw);background:rgba(26,13,8,.9);color:var(--cream);border:1px solid rgba(255,216,198,.12);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border-radius:24px;padding:34px 28px;box-shadow:0 34px 90px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:.42s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;gap:16px}
+    .modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+    .panel-close,.modal-close{align-self:flex-end;border:0;background:transparent;font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;opacity:.55;cursor:pointer;color:var(--cream);padding:4px 8px}
+    .panel-close:hover,.modal-close:hover{opacity:1;color:var(--peach)}
+    .panel-title,.modal-title{font-family:var(--font-display);font-style:italic;font-size:34px;font-weight:600;line-height:1;color:var(--cream)}
+    .panel-copy,.modal-copy{font-size:13px;line-height:1.65;opacity:.72;color:var(--cream)}
+    .panel-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .panel-btn,.modal-btn{border-radius:999px;border:1px solid rgba(255,216,198,.18);background:rgba(255,216,198,.05);color:var(--cream);padding:10px 20px;font-family:var(--font-mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:.3s}
+    .panel-btn:hover,.modal-btn:hover{border-color:var(--peach);color:var(--peach)}
+    .panel-btn.primary,.modal-btn.primary{border-color:rgba(255,181,167,.4);background:rgba(255,181,167,.1);color:var(--peach)}
+    @media(max-width:900px){.shop-grid{max-width:680px}.track-item{grid-template-columns:35px 1fr;gap:8px 12px}.track-car,.track-mood{grid-column:2}.track-mood{text-align:left}}
+    @media(max-width:768px){section{padding:44px 16px}.hero-section{padding-bottom:122px}.fixed-brand{left:calc(15px + var(--safe-left));top:calc(17px + var(--safe-top));font-size:13px}.fixed-ig{right:calc(14px + var(--safe-right));top:calc(18px + var(--safe-top));font-size:8px}.command-dock{gap:1px;padding:6px 7px;max-width:calc(100vw - 16px);overflow:hidden}.dock-item{font-size:6px;padding:6px 7px;letter-spacing:.08em}.scene-label{left:calc(12px + var(--safe-left));bottom:calc(86px + var(--safe-bottom));font-size:6px}.detail-panel{top:auto;bottom:0;width:100vw;max-width:100vw;height:76vh;height:76dvh;border-left:0;border-top:1px solid rgba(255,216,198,.12);border-radius:24px 24px 0 0;transform:translateY(105%);padding:28px 18px}.detail-panel.open{transform:translateY(0)}}
+  </style>
 </head>
-
 <body>
-<div class="loader" id="loader">
-  <div class="loader-inner">
-    <div class="loader-top mono"><span>TEAMBKIT / MMXXVI</span><span>RTBTS</span></div>
-    <div class="loader-num" id="loaderNum">0<span style="color:var(--peach)">.</span></div>
-    <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
-    <div class="loader-bottom mono"><span>3D CAR · KINETIC SCULPTURE · LIQUID GLASS</span><span id="loaderStatus">INITIALIZING</span></div>
+  <canvas id="bg-canvas"></canvas>
+  <canvas id="three-canvas"></canvas>
+  <div class="vignette"></div>
+  <div class="grain"></div>
+  <div class="model-status" id="modelStatus">LOADING MACHINES</div>
+  <div class="panel-overlay" id="panelOverlay"></div>
+
+  <div class="fixed-brand">TEAMBKIT</div>
+  <a class="fixed-ig" href="https://instagram.com/teambkit.official" target="_blank" rel="noopener"><span class="ig-dot"></span>@teambkit.official</a>
+  <div class="scene-label" id="sceneLabel">STOCK OUTSIDE</div>
+
+  <nav class="command-dock" id="commandDock">
+    <button class="dock-item active" data-target="hero">Home</button>
+    <button class="dock-item" data-target="track">Track</button>
+    <button class="dock-item" data-target="machine">Machine</button>
+    <button class="dock-item" data-target="shop">Shop</button>
+    <button class="dock-item" data-target="match">Match</button>
+    <button class="dock-item" data-target="proof">Proof</button>
+    <button class="dock-item" data-target="space">Space</button>
+  </nav>
+
+  <div class="detail-panel" id="detailPanel">
+    <button class="panel-close" id="detailClose">CLOSE</button>
+    <span class="panel-copy" id="dpNum" style="color:var(--peach)"></span>
+    <h3 class="panel-title" id="dpTitle"></h3>
+    <p class="panel-copy" id="dpCar"></p>
+    <p class="panel-copy" id="dpMood" style="font-style:italic;color:var(--peach)"></p>
+    <p class="panel-copy" id="dpDesc"></p>
+    <span class="panel-copy" id="dpStatus" style="border:1px solid rgba(255,181,167,.25);padding:6px 12px;border-radius:20px;display:inline-block;color:var(--peach)"></span>
+    <div class="panel-actions"><button class="panel-btn primary" id="dpViewMachine">View Machine</button><button class="panel-btn" id="dpCopyCaption">Copy Caption</button></div>
   </div>
-</div>
-
-<canvas id="bg-canvas"></canvas>
-<canvas id="world-canvas"></canvas>
-
-<div class="cursor-glow" id="cursorGlow"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-<div class="cursor-dot" id="cursorDot"></div>
-
-<div class="vignette"></div>
-<div class="scanlines"></div>
-<div class="grain"></div>
-<div class="progress" id="progress"></div>
-
-<header class="nav">
-  <div class="nav-inner">
-    <a href="#hero" class="logo mono" data-hover>TEAMBKIT<span>.</span></a>
-    <div class="nav-chip mono">CINEMATIC LIQUID SHOWROOM</div>
-    <button class="menu-btn" id="menuBtn" aria-label="Open menu" data-hover><i></i></button>
+  <div class="modal" id="shopModal">
+    <button class="modal-close" id="shopClose">CLOSE</button>
+    <span class="modal-copy" id="smStatus" style="color:var(--peach)"></span>
+    <h3 class="modal-title" id="smName"></h3>
+    <p class="modal-copy" id="smDesc"></p>
+    <button class="modal-btn primary" id="smNotify">Notify Me</button>
   </div>
-</header>
-
-<nav class="menu-overlay" id="menuOverlay">
-  <div class="menu-list">
-    <div class="menu-item" data-target="#hero" data-mode="car" data-hover><div><div class="mono overline">00 / ENTRANCE</div><div class="menu-title sans">ENTR<span class="serif">ance</span></div></div><div class="mono" style="font-size:10px;letter-spacing:.34em;opacity:.52">HERO CAR</div></div>
-    <div class="menu-item" data-target="#machine" data-mode="car" data-hover><div><div class="mono overline">01 / MACHINE</div><div class="menu-title sans">MACH<span class="serif">ine</span></div></div><div class="mono" style="font-size:10px;letter-spacing:.34em;opacity:.52">CAMERA WORK</div></div>
-    <div class="menu-item" data-target="#tracks" data-mode="wheel" data-hover><div><div class="mono overline">02 / ARCHIVE</div><div class="menu-title sans">TRAC<span class="serif">k</span></div></div><div class="mono" style="font-size:10px;letter-spacing:.34em;opacity:.52">WHEEL ORBIT</div></div>
-    <div class="menu-item" data-target="#garment" data-mode="garment" data-hover><div><div class="mono overline">03 / WEAR</div><div class="menu-title sans">GAR<span class="serif">ment</span></div></div><div class="mono" style="font-size:10px;letter-spacing:.34em;opacity:.52">3D APPAREL</div></div>
-    <div class="menu-item" data-target="#store" data-mode="store" data-hover><div><div class="mono overline">04 / SPACE</div><div class="menu-title sans">STO<span class="serif">re</span></div></div><div class="mono" style="font-size:10px;letter-spacing:.34em;opacity:.52">POP-UP ROOM</div></div>
+  <div class="modal" id="proofModal">
+    <button class="modal-close" id="proofClose">CLOSE</button>
+    <span class="modal-copy" id="pmStatus" style="color:var(--peach)"></span>
+    <h3 class="modal-title" id="pmName"></h3>
+    <p class="modal-copy" id="pmDesc"></p>
+    <p class="modal-copy" id="pmFuture" style="opacity:.5;font-size:11px;font-style:italic"></p>
   </div>
-</nav>
 
-<section id="hero" class="layer hero" data-scene="car">
-  <div class="hero-row mono"><span>MMXXVI · SEOUL</span><span>LIVE PEACH GRADIENT / 3D</span></div>
-  <div class="hero-center">
-    <div class="hero-kicker mono" id="heroKicker">WHERE SOUND BECOMES SPEED</div>
-    <h1 class="hero-title sans" id="heroTitle">TEAM<span class="serif">BKIT</span></h1>
-    <div class="hero-sub"><i></i><p class="serif">Race To Be The Star.</p><i></i></div>
-    <p class="hero-copy">A cinematic car culture system. Music becomes machine. Apparel becomes identity. Space becomes proof.</p>
+  <div class="lenis-wrapper" id="lenisWrapper">
+    <section class="hero-section" id="section-hero">
+      <div class="hero-inner">
+        <h1 class="hero-brand">TEAM<span class="thin">BKIT</span></h1>
+        <p class="hero-slogan">Race To Be The Star</p>
+        <p class="hero-sub">STOCK OUTSIDE · FASTER INSIDE</p>
+        <div class="hero-ctas">
+          <button class="hero-cta primary" data-scroll-to="track">Track To Machine</button>
+          <button class="hero-cta" data-scroll-to="machine">Explore Machine</button>
+          <button class="hero-cta" data-scroll-to="shop">Shop Preview</button>
+          <button class="hero-cta" data-scroll-to="space">Offline Space</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-track">
+      <div class="block"><p class="section-label">[ Track To Machine ]</p>
+        <div class="track-list" id="trackList">
+          <div class="track-item" data-track="0"><span class="track-num">001</span><span class="track-title">My City</span><span class="track-car">Dodge Charger</span><span class="track-mood">night prowl</span></div>
+          <div class="track-item" data-track="1"><span class="track-num">002</span><span class="track-title">Blank Space</span><span class="track-car">Chevrolet Camaro</span><span class="track-mood">open road</span></div>
+          <div class="track-item" data-track="2"><span class="track-num">003</span><span class="track-title">In and Out of Love</span><span class="track-car">Audi R8</span><span class="track-mood">twilight chase</span></div>
+          <div class="track-item" data-track="3"><span class="track-num">004</span><span class="track-title">Abracadabra</span><span class="track-car">Toyota GR86</span><span class="track-mood">mountain run</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-machine" style="justify-content:center;min-height:130vh">
+      <div class="machine-hud"><span>STOCK OUTSIDE</span><span>FASTER INSIDE</span><span>ONE CAR PER SCENE</span><span>BKIT PROOF</span></div>
+      <div class="block" style="text-align:center;pointer-events:none"><p class="section-label">[ The Machine ]</p><h2 class="title-large">Machines change.<br><em>The feeling stays.</em></h2></div>
+    </section>
+
+    <section id="section-shop" class="shop-section">
+      <div class="block" style="text-align:center"><p class="section-label">[ Shop Preview ]</p><h2 class="title-large">Wear the <em>machine</em>.</h2><p class="soft-copy" style="margin-left:auto;margin-right:auto">BKIT sticker, apparel, key tag and proof plate — a premium lifestyle drop for the culture.</p></div>
+      <div class="shop-grid" id="shopGrid">
+        <div class="shop-tile" data-product="sticker"><p class="shop-name">BKIT Sticker</p><p class="shop-status">UV DTF / Prototype</p></div>
+        <div class="shop-tile" data-product="apparel"><p class="shop-name">BKIT Apparel</p><p class="shop-status">Hoodie / Tee / Cap</p></div>
+        <div class="shop-tile" data-product="keytag"><p class="shop-name">BKIT Key Tag</p><p class="shop-status">Numbered Drop</p></div>
+        <div class="shop-tile" data-product="plate"><p class="shop-name">BKIT Proof Plate</p><p class="shop-status">QR Identity</p></div>
+      </div>
+    </section>
+
+    <section id="section-match" class="match-section">
+      <p class="section-label">[ The Match ]</p>
+      <h2 class="title-large">Which machine <em>fits the track</em>?</h2>
+      <div class="match-options">
+        <div class="match-option" id="optionA" data-option="A"><p class="match-label">Option A</p><p class="match-name">Dodge Charger</p><p class="match-percentage" id="pctA">0%</p></div>
+        <div class="match-option" id="optionB" data-option="B"><p class="match-label">Option B</p><p class="match-name">Audi R8</p><p class="match-percentage" id="pctB">0%</p></div>
+      </div>
+      <button class="reset-btn" id="matchReset">RESET VOTE</button>
+    </section>
+
+    <section id="section-proof" class="proof-section">
+      <p class="section-label">[ BKIT Proof ]</p>
+      <h2 class="title-large">Proof for the <em>culture</em>.</h2>
+      <div class="proof-blocks" id="proofBlocks">
+        <div class="proof-block" data-proof="register"><p class="proof-step">01</p><p class="proof-name">Register</p><p class="proof-desc">Build record</p></div>
+        <div class="proof-block" data-proof="verify"><p class="proof-step">02</p><p class="proof-name">Verify</p><p class="proof-desc">Part provenance</p></div>
+        <div class="proof-block" data-proof="display"><p class="proof-step">03</p><p class="proof-name">Display</p><p class="proof-desc">QR identity</p></div>
+      </div>
+    </section>
+
+    <section id="section-space" class="space-section">
+      <p class="section-label">[ Offline Space ]</p>
+      <h2 class="title-large">TEAMBKIT<br><em>Offline Space</em></h2>
+      <p class="soft-copy" style="margin-left:auto;margin-right:auto">A warm showroom concept: car, apparel, sticker and proof plate — one physical TEAMBKIT world.</p>
+      <form class="offline-form" id="notifyForm"><input class="offline-input" type="email" placeholder="your@email.com" required id="emailInput"><button class="offline-btn" type="submit" id="notifyBtn">Notify Me</button></form>
+    </section>
+
+    <footer>
+      <p class="footer-brand">TEAMBKIT</p>
+      <p class="footer-sub">RACE TO BE THE STAR</p>
+      <a class="footer-ig" href="https://instagram.com/teambkit.official" target="_blank" rel="noopener">@teambkit.official</a>
+      <p class="footer-sub" style="font-size:8px;margin-top:14px">© 2026 TEAMBKIT</p>
+    </footer>
   </div>
-  <div class="scroll-cue mono"><div><div>SCROLL ↓</div><div class="scroll-stick"><span></span></div></div><div>00 / 06</div></div>
-</section>
 
-<section id="machine" class="layer machine" data-scene="car">
-  <div class="sticky-scene">
-    <div class="scene-title"><div class="overline mono">[ 01 / THE MACHINE ]</div><h2 class="serif">Not a render.<br>A ritual.</h2></div>
-    <div class="scene-caption"><small class="mono">BKIT · 001 / 2026</small><h3 class="serif" id="machineCaption">Stock Outside.</h3></div>
-  </div>
-</section>
+  <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 
-<section id="identity" class="layer chapter left liquid" data-scene="car">
-  <div class="chapter-copy"><div class="overline mono">01 / IDENTITY</div><h2 class="chapter-title sans">SOUND<br><span class="serif">BECOMES</span><br>SPEED.</h2><p class="chapter-line">Music translated into machine culture.</p></div>
-  <div class="hud mono"><span>TEAMBKIT</span><span>RTBTS / SEOUL</span></div>
-</section>
+  <script type="module">
+    import * as THREE from 'three';
+    import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+    import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
+    import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import {ShaderPass} from 'three/addons/postprocessing/ShaderPass.js';
+    import {RGBShiftShader} from 'three/addons/shaders/RGBShiftShader.js';
+    import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+    import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
+    import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 
-<section id="tracks" class="layer chapter right liquid" data-scene="wheel">
-  <div class="chapter-copy"><div class="overline mono">02 / TRACK TO MACHINE</div><h2 class="chapter-title sans">TRACK<br><span class="serif">TO</span><br>MACHINE.</h2><p class="chapter-line">A song becomes a car. A mood becomes a build.</p></div>
-  <div class="list-hud mono"><div>004 · Abracadabra × GR86</div><div>003 · In and Out of Love × R8</div><div>002 · Blank Space × Camaro</div></div>
-</section>
+    const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+    const isMobile=innerWidth<768;
+    const statusEl=$('#modelStatus');
+    function showStatus(text,time=2200){statusEl.textContent=text;statusEl.classList.add('show');clearTimeout(showStatus.t);showStatus.t=setTimeout(()=>statusEl.classList.remove('show'),time)}
 
-<section id="garment" class="layer chapter left liquid" data-scene="garment">
-  <div class="chapter-copy"><div class="overline mono">03 / BKIT WEAR</div><h2 class="chapter-title sans">WEAR<br><span class="serif">THE</span><br>MACHINE.</h2><p class="chapter-line">Apparel that feels like a car part.</p></div>
-  <div class="product-hud mono"><div>HOODIE</div><div>TEE</div><div>STICKER</div></div>
-</section>
+    // ═══════════════════════════════════════════════════
+    // FLUID PEACH GRADIENT BACKGROUND (separate canvas)
+    // ═══════════════════════════════════════════════════
+    const bgCanvas = $('#bg-canvas');
+    const bgRenderer = new THREE.WebGLRenderer({ canvas: bgCanvas, antialias: false, alpha: false });
+    bgRenderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    bgRenderer.setSize(innerWidth, innerHeight);
+    const bgScene = new THREE.Scene();
+    const bgCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-<section id="store" class="layer chapter right liquid" data-scene="store">
-  <div class="grid-bg"></div>
-  <div class="chapter-copy"><div class="overline mono">04 / OFFLINE SPACE</div><h2 class="chapter-title sans">BKIT<br><span class="serif">SPACE</span><br>2026.</h2><p class="chapter-line">One hero car. One sound system. One glass room.</p></div>
-  <div class="soon-hud mono">COMING SOON · SEOUL KR</div>
-</section>
+    const bgUniforms = {
+      uTime: { value: 0 },
+      uScroll: { value: 0 },
+      uMouse: { value: new THREE.Vector2(.5, .5) },
+      uResolution: { value: new THREE.Vector2(innerWidth, innerHeight) }
+    };
 
-<section id="manifesto" class="layer finale liquid" data-scene="car">
-  <div><div class="overline mono">05 / MANIFESTO</div><h2 class="finale-title sans">RTBTS</h2><p class="finale-sub serif">Race To Be The Star.</p></div>
-</section>
+    const bgMat = new THREE.ShaderMaterial({
+      uniforms: bgUniforms,
+      vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position, 1.0); }`,
+      fragmentShader: `
+        precision highp float;
+        varying vec2 vUv;
+        uniform float uTime, uScroll;
+        uniform vec2 uMouse, uResolution;
 
-<footer class="layer footer" data-scene="store">
-  <div><div class="footer-logo sans">TEAMBKIT<span>.</span></div><div class="footer-meta mono">© 2026 TEAMBKIT · WHERE SOUND BECOMES SPEED</div></div>
-  <div class="seo">TEAMBKIT is a Korean car culture brand connecting music, cars, apparel, offline space, visual storytelling, and digital automotive culture. RTBTS means Race To Be The Star. Track to Machine is a TEAMBKIT project where a song becomes a car concept.</div>
-</footer>
+        float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        float noise(vec2 p){
+          vec2 i = floor(p), f = fract(p);
+          float a = hash(i), b = hash(i + vec2(1,0));
+          float c = hash(i + vec2(0,1)), d = hash(i + vec2(1,1));
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+        }
+        float fbm(vec2 p){
+          float v = 0.0, a = 0.5;
+          for(int i = 0; i < 7; i++){ v += a * noise(p); p *= 2.05; a *= 0.48; }
+          return v;
+        }
 
-<script>
-(() => {
-  const $ = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+        void main(){
+          vec2 uv = vUv;
+          float ar = uResolution.x / uResolution.y;
+          vec2 p = (uv - 0.5) * vec2(ar, 1.0);
+          vec2 mouse = (uMouse - 0.5) * vec2(ar, 1.0) * 0.4;
+          float t = uTime * 0.045;
+          float sc = uScroll;
 
-  const isMobile = matchMedia('(max-width: 768px)').matches;
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  gsap.registerPlugin(ScrollTrigger);
+          // Strong domain warping for visible fluid motion
+          vec2 q = vec2(
+            fbm(p * 0.9 + t * 0.4 + mouse * 0.5),
+            fbm(p * 0.9 + vec2(5.2, 1.3) + t * 0.32 + mouse * 0.3)
+          );
+          vec2 r = vec2(
+            fbm(p * 1.4 + q * 4.5 + vec2(1.7, 9.2) + t * 0.18),
+            fbm(p * 1.4 + q * 4.5 + vec2(8.3, 2.8) + t * 0.14)
+          );
+          vec2 s = vec2(
+            fbm(p * 1.8 + r * 3.8 + vec2(3.1, 7.7) - t * 0.1),
+            fbm(p * 1.8 + r * 3.8 + vec2(6.4, 4.2) + t * 0.08)
+          );
+          float f = fbm(p * 2.2 + s * 3.5 + t * 0.22);
 
-  let mouseX = .5, mouseY = .5, mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
-  let currentMode = 'car';
+          // Color palette — warm peach / champagne / rose / lavender / espresso
+          vec3 cream = vec3(1.0, 0.95, 0.88);
+          vec3 peach = vec3(1.0, 0.71, 0.65);        // #FFB5A7
+          vec3 peachDeep = vec3(0.84, 0.54, 0.41);   // #D58A68
+          vec3 champagne = vec3(0.91, 0.76, 0.54);   // #E8C28A
+          vec3 rose = vec3(0.79, 0.62, 0.55);        // #C99E8C
+          vec3 lavender = vec3(0.73, 0.64, 0.78);    // #B9A4C8
+          vec3 plum = vec3(0.35, 0.22, 0.32);        // deep plum
+          vec3 espresso = vec3(0.10, 0.05, 0.03);    // #1A0D08
 
-  const dot = $('#cursorDot'), ring = $('#cursorRing'), glow = $('#cursorGlow');
-  if (!isMobile) {
-    addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      mouseX = e.clientX / innerWidth; mouseY = e.clientY / innerHeight;
-      dot.style.left = mx + 'px'; dot.style.top = my + 'px';
-      glow.style.left = mx + 'px'; glow.style.top = my + 'px';
-    }, { passive: true });
-    function cursorLoop(){ rx += (mx-rx)*.16; ry += (my-ry)*.16; ring.style.left = rx+'px'; ring.style.top = ry+'px'; requestAnimationFrame(cursorLoop); }
-    cursorLoop();
-    $$('[data-hover],a,button').forEach(el => { el.addEventListener('mouseenter',()=>ring.classList.add('hover')); el.addEventListener('mouseleave',()=>ring.classList.remove('hover')); });
-  }
+          // Base — scroll-reactive gradient
+          vec3 baseTop = mix(cream, peach, smoothstep(0.0, 0.5, sc));
+          baseTop = mix(baseTop, champagne, smoothstep(0.5, 1.0, sc) * 0.6);
 
-  let lenis = null;
-  if (window.Lenis && !reducedMotion) {
-    lenis = new Lenis({ lerp: .072, wheelMultiplier: .76, smoothWheel: true, syncTouch: false });
-    lenis.on('scroll', ScrollTrigger.update);
-    function raf(time){ lenis.raf(time); requestAnimationFrame(raf); }
-    requestAnimationFrame(raf);
-  }
+          vec3 baseBottom = mix(peachDeep, rose, smoothstep(0.0, 0.5, sc));
+          baseBottom = mix(baseBottom, plum, smoothstep(0.5, 1.0, sc));
 
-  const bgRenderer = new THREE.WebGLRenderer({ canvas: $('#bg-canvas'), alpha: true, antialias: false, powerPreference: 'high-performance' });
-  bgRenderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.15 : 1.7));
-  bgRenderer.setSize(innerWidth, innerHeight);
-  const bgScene = new THREE.Scene();
-  const bgCamera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
-  const bgUniforms = {
-    uTime:{value:0}, uMouse:{value:new THREE.Vector2(.5,.5)}, uScroll:{value:0}, uMode:{value:0}, uResolution:{value:new THREE.Vector2(innerWidth,innerHeight)}
-  };
-  const bgMaterial = new THREE.ShaderMaterial({
-    uniforms:bgUniforms,
-    vertexShader:`void main(){gl_Position=vec4(position,1.0);}`,
-    fragmentShader:`
-      precision highp float;
-      uniform float uTime; uniform vec2 uMouse; uniform float uScroll; uniform float uMode; uniform vec2 uResolution;
-      float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}
-      float noise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);float a=hash(i);float b=hash(i+vec2(1.,0.));float c=hash(i+vec2(0.,1.));float d=hash(i+vec2(1.,1.));vec2 u=f*f*(3.-2.*f);return mix(a,b,u.x)+(c-a)*u.y*(1.-u.x)+(d-b)*u.x*u.y;}
-      float fbm(vec2 p){float v=0.;float a=.5;for(int i=0;i<6;i++){v+=a*noise(p);p*=2.04;a*=.5;}return v;}
-      void main(){
-        vec2 uv=gl_FragCoord.xy/uResolution.xy; vec2 p=uv-.5; p.x*=uResolution.x/uResolution.y;
-        float t=uTime*.058; float s=uScroll;
-        vec2 w=p+.10*vec2(fbm(p*3.1+t+s),fbm(p*3.1-t+s*.7));
-        float n1=fbm(w*2.2+vec2(t,-t*.8)+s*.9); float n2=fbm(w*5.2-vec2(t*1.2,t)-s*.4); float n3=fbm(w*9.+vec2(t*1.4,-t*1.1));
-        vec3 black=vec3(.020,.010,.035); vec3 purple=vec3(.105,.052,.178); vec3 peach=vec3(1.,.710,.650); vec3 rose=vec3(1.,.372,.624); vec3 blue=vec3(.590,.820,1.); vec3 gold=vec3(.965,.755,.465);
-        vec3 modeColor=mix(peach,blue,smoothstep(.15,.78,uMode)); modeColor=mix(modeColor,gold,smoothstep(1.45,2.25,uMode));
-        float md=distance(uv,uMouse); float mg=smoothstep(.70,0.,md)*.38;
-        vec3 col=black; col=mix(col,purple,smoothstep(.12,.88,n1)*.86); col+=peach*smoothstep(.70,1.,n2)*.26; col+=blue*smoothstep(.64,.98,1.-n1)*.11; col+=rose*smoothstep(.72,1.,n3)*.11; col+=modeColor*mg*.56;
-        float beam=smoothstep(.025,0.,abs(p.y+sin(p.x*4.+uTime*.18)*.08-.12)); col+=peach*beam*.11;
-        float vig=1.-smoothstep(.52,1.54,length(p)); col*=vig;
-        gl_FragColor=vec4(col,1.);
-      }`
-  });
-  bgScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), bgMaterial));
+          vec3 base = mix(baseTop, baseBottom, smoothstep(0.0, 1.0, uv.y));
 
-  const canvas = $('#world-canvas');
-  const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x090512, 12, 44);
-  const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, .1, 100); camera.position.set(6,2.7,8);
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setSize(innerWidth, innerHeight); renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.15 : 1.7)); renderer.setClearColor(0x000000,0); renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.18; renderer.shadowMap.enabled = !isMobile; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  const composer = new THREE.EffectComposer(renderer); composer.addPass(new THREE.RenderPass(scene,camera));
-  const bloom = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight), isMobile ? .4 : .9, .5, .3); bloom.threshold=.16; bloom.strength=isMobile?.42:.9; bloom.radius=isMobile?.28:.55; composer.addPass(bloom);
+          // Fluid color layers (stronger, more visible)
+          vec3 accent1 = mix(peach, champagne, smoothstep(0.25, 0.75, f));
+          vec3 accent2 = mix(rose, lavender, smoothstep(0.3, 0.8, length(q)));
+          vec3 accent3 = mix(peachDeep, plum, smoothstep(0.4, 0.9, length(r)));
 
-  const root = new THREE.Group(), carGroup = new THREE.Group(), wheelGroup = new THREE.Group(), garmentGroup = new THREE.Group(), storeGroup = new THREE.Group(), sculptureGroup = new THREE.Group();
-  scene.add(root); root.add(carGroup,wheelGroup,garmentGroup,storeGroup,sculptureGroup);
-  scene.add(new THREE.AmbientLight(0xffffff,.23));
-  const key = new THREE.DirectionalLight(0xffd1c3,3.5); key.position.set(-5.2,6.2,5); key.castShadow=!isMobile; scene.add(key);
-  const rim = new THREE.PointLight(0x9fd6ff,3.9,26); rim.position.set(5.2,2.8,-5.8); scene.add(rim);
-  const rose = new THREE.PointLight(0xff5f9f,2.9,24); rose.position.set(-3.4,1.4,-5.5); scene.add(rose);
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(150,150), new THREE.MeshPhysicalMaterial({ color:0x090512, metalness:.78, roughness:.22, clearcoat:1, clearcoatRoughness:.16 })); floor.rotation.x = -Math.PI/2; floor.position.y = -.54; floor.receiveShadow = true; scene.add(floor);
+          vec3 col = base;
+          col = mix(col, accent1, smoothstep(0.30, 0.75, f) * 0.65);
+          col = mix(col, accent2, smoothstep(0.50, 0.90, length(q)) * 0.55);
+          col = mix(col, accent3, smoothstep(0.60, 0.95, length(r)) * 0.45);
 
-  const M = {
-    paint:new THREE.MeshPhysicalMaterial({ color:0x2b1838, metalness:.93, roughness:.12, clearcoat:1, clearcoatRoughness:.045 }),
-    dark:new THREE.MeshPhysicalMaterial({ color:0x17111f, metalness:.86, roughness:.18, clearcoat:1, clearcoatRoughness:.06 }),
-    glass:new THREE.MeshPhysicalMaterial({ color:0x070912, metalness:.18, roughness:.03, clearcoat:1, transparent:true, opacity:.78 }),
-    tire:new THREE.MeshStandardMaterial({ color:0x020203, roughness:.52, metalness:.1 }),
-    rim:new THREE.MeshStandardMaterial({ color:0xc7c4bc, roughness:.18, metalness:.94 }),
-    peach:new THREE.MeshBasicMaterial({ color:0xffb5a7 }),
-    blue:new THREE.MeshBasicMaterial({ color:0x9fd6ff }),
-    rose:new THREE.MeshBasicMaterial({ color:0xff336d }),
-    cloth:new THREE.MeshPhysicalMaterial({ color:0x121018, roughness:.58, metalness:.06, clearcoat:.35, clearcoatRoughness:.5 })
-  };
+          // LARGE VISIBLE WAVES — the "물결" effect
+          float wave1 = sin(p.x * 1.2 + p.y * 0.8 + f * 3.5 + t * 1.4) * 0.5 + 0.5;
+          float wave2 = sin(p.x * 0.7 - p.y * 1.3 + s.x * 3.0 + t * 0.9) * 0.5 + 0.5;
+          float wave3 = sin((p.x + p.y) * 0.9 + r.y * 2.8 - t * 1.1) * 0.5 + 0.5;
 
-  function box(w,h,d,mat,x=0,y=0,z=0){ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat); m.position.set(x,y,z); m.castShadow=!isMobile; m.receiveShadow=true; return m; }
+          // Wave bands — soft color ribbons
+          vec3 waveCol1 = mix(peach, champagne, wave1);
+          vec3 waveCol2 = mix(rose, lavender, wave2);
+          vec3 waveCol3 = mix(peachDeep, cream, wave3);
 
-  function createCar(){
-    const g = new THREE.Group();
-    g.add(box(4.55,.58,1.72,M.paint,0,.08,0));
-    g.add(box(1.45,.34,1.52,M.paint,2.05,-.02,0));
-    g.add(box(1.04,.50,1.80,M.dark,-2.12,.04,0));
-    g.add(box(1.52,.64,1.12,M.glass,-.34,.67,0));
-    g.add(box(1.55,.06,1.38,M.dark,1.10,.43,0));
-    g.add(box(1.16,.06,1.82,M.dark,2.67,-.22,0));
-    g.add(box(1.35,.06,1.95,M.dark,-2.52,.66,0));
-    g.add(box(.08,.35,.06,M.dark,-2.48,.47,.55)); g.add(box(.08,.35,.06,M.dark,-2.48,.47,-.55));
-    g.add(box(.045,.09,.42,M.peach,2.80,.08,.55)); g.add(box(.045,.09,.42,M.peach,2.80,.08,-.55));
-    g.add(box(.045,.08,.46,M.rose,-2.68,.13,.57)); g.add(box(.045,.08,.46,M.rose,-2.68,.13,-.57));
-    const wheelGeo = new THREE.CylinderGeometry(.46,.46,.34,72), rimGeo = new THREE.CylinderGeometry(.27,.27,.37,48), ringGeo = new THREE.TorusGeometry(.29,.018,12,64);
-    [[-1.58,-.18,.94],[1.48,-.18,.94],[-1.58,-.18,-.94],[1.48,-.18,-.94]].forEach(([x,y,z])=>{
-      const wh = new THREE.Mesh(wheelGeo,M.tire); wh.rotation.x=Math.PI/2; wh.position.set(x,y,z); wh.castShadow=!isMobile;
-      const r = new THREE.Mesh(rimGeo,M.rim); r.rotation.x=Math.PI/2; r.position.set(x,y,z);
-      const glow = new THREE.Mesh(ringGeo,z>0?M.peach:M.blue); glow.rotation.x=Math.PI/2; glow.position.set(x,y,z+(z>0?.185:-.185));
-      g.add(wh,r,glow);
+          col += waveCol1 * smoothstep(0.45, 0.75, wave1) * 0.18;
+          col += waveCol2 * smoothstep(0.50, 0.80, wave2) * 0.14;
+          col += waveCol3 * smoothstep(0.55, 0.85, wave3) * 0.12;
+
+          // Aurora-like light streaks
+          float aurora = smoothstep(0.55, 0.95, sin(p.x * 2.5 + q.y * 4.0 + t * 1.8) * 0.5 + 0.5);
+          col += mix(champagne, peach, aurora) * aurora * 0.22;
+
+          // Mouse-reactive light leak (stronger)
+          float md = distance(uv, uMouse);
+          float leak = exp(-md * 3.0);
+          col += mix(peach, champagne, 0.5) * leak * 0.35;
+          col += lavender * leak * 0.12;
+
+          // Vignette
+          float vign = 1.0 - smoothstep(0.4, 1.6, length(p) * 1.15);
+          col *= 0.55 + vign * 0.55;
+
+          // Cinematic bars (subtle)
+          col *= smoothstep(0.0, 0.06, uv.y) * smoothstep(1.0, 0.94, uv.y) * 0.35 + 0.65;
+
+          // Film grain
+          col += (hash(uv * 900.0 + uTime * 3.0) - 0.5) * 0.028;
+
+          // Espresso tint on edges for depth
+          col = mix(col, espresso, smoothstep(0.8, 1.5, length(p)) * 0.6);
+
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `
     });
-    const under = new THREE.Mesh(new THREE.PlaneGeometry(4.2,1.6), new THREE.MeshBasicMaterial({ color:0xff5f9f, transparent:true, opacity:.16, side:THREE.DoubleSide })); under.rotation.x=-Math.PI/2; under.position.y=-.42; g.add(under);
-    return g;
-  }
+    bgScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMat));
 
-  function createWheel(){ const g=new THREE.Group(); const tire=new THREE.Mesh(new THREE.TorusGeometry(1.35,.3,24,128),new THREE.MeshPhysicalMaterial({color:0x020204,roughness:.48,metalness:.24,clearcoat:.7})); tire.rotation.y=Math.PI/2; g.add(tire); const hub=new THREE.Mesh(new THREE.CylinderGeometry(.88,.88,.26,96),new THREE.MeshPhysicalMaterial({color:0xc7c4bc,roughness:.13,metalness:.96,clearcoat:1})); hub.rotation.z=Math.PI/2; g.add(hub); for(let i=0;i<12;i++){const s=box(.12,1.38,.08,M.rim,0,0,.15);s.rotation.z=Math.PI*2/12*i;g.add(s);} const ring=new THREE.Mesh(new THREE.TorusGeometry(1.36,.018,10,128),new THREE.MeshBasicMaterial({color:0xffb5a7,transparent:true,opacity:.82})); ring.rotation.y=Math.PI/2; ring.position.z=.18; g.add(ring); g.position.set(0,.9,0); g.scale.setScalar(1.45); return g; }
-  function createGarment(){ const g=new THREE.Group(); g.add(box(1.85,2.35,.26,M.cloth,0,.2,0)); const hood=new THREE.Mesh(new THREE.TorusGeometry(.55,.16,24,80),M.cloth); hood.position.y=1.55; hood.rotation.x=Math.PI/2; g.add(hood); const l=box(.48,1.65,.24,M.cloth,-1.15,.35,0); l.rotation.z=-.24; const r=l.clone(); r.position.x=1.15; r.rotation.z=.24; g.add(l,r); g.add(box(1.05,.10,.03,M.peach,0,.64,.151)); g.add(box(.55,.055,.03,M.blue,0,.44,.152)); g.add(box(.36,.50,.035,M.peach,.77,-.78,.155)); const hanger=new THREE.Mesh(new THREE.TorusGeometry(.60,.025,8,60),new THREE.MeshBasicMaterial({color:0xf8eadc})); hanger.position.y=2.12; hanger.rotation.x=Math.PI/2; g.add(hanger); g.position.set(0,.35,0); g.scale.setScalar(1.35); return g; }
-  function createStore(){ const g=new THREE.Group(); const wall=new THREE.MeshPhysicalMaterial({color:0x120a1f,metalness:.32,roughness:.28,clearcoat:.7,clearcoatRoughness:.16,transparent:true,opacity:.82}); const glass=new THREE.MeshPhysicalMaterial({color:0x0b0813,metalness:.18,roughness:.02,clearcoat:1,transparent:true,opacity:.34}); g.add(box(5.2,.12,3.4,wall,0,-.45,0)); g.add(box(5.2,2.4,.12,wall,0,.75,-1.65)); g.add(box(.12,2.2,3.4,glass,-2.6,.68,0)); g.add(box(.12,2.2,3.4,glass,2.6,.68,0)); g.add(box(2.2,.18,.04,M.peach,0,1.55,-1.56)); g.add(box(1.1,.08,.045,M.blue,0,1.25,-1.555)); const ped=new THREE.Mesh(new THREE.CylinderGeometry(.72,.72,.16,80),wall); ped.position.set(0,-.30,-.22); g.add(ped); const mini=new THREE.Group(); mini.add(box(1.24,.28,.48,M.paint,0,.02,0)); mini.add(box(.50,.26,.34,glass,-.12,.26,0)); mini.position.set(0,-.06,-.22); g.add(mini); g.add(box(4.4,.035,.035,M.peach,0,-.19,1.28)); g.add(box(4.4,.035,.035,M.blue,0,-.19,-1.34)); g.position.set(0,.28,0); g.scale.setScalar(1.18); return g; }
-  function createSculpture(){ const g=new THREE.Group(); const matP=new THREE.MeshBasicMaterial({color:0xffb5a7,transparent:true,opacity:.38}); const matB=new THREE.MeshBasicMaterial({color:0x9fd6ff,transparent:true,opacity:.28}); for(let i=0;i<7;i++){const tor=new THREE.Mesh(new THREE.TorusGeometry(2.2+i*.16,.006+i*.002,8,120),i%2?matB:matP); tor.rotation.x=Math.PI/2+i*.18; tor.rotation.y=i*.12; tor.position.y=.25+i*.08; g.add(tor);} for(let i=0;i<36;i++){const shard=box(.018,.55+Math.random()*.8,.018,i%2?M.peach:M.blue,(Math.random()-.5)*10,Math.random()*5-1.2,(Math.random()-.5)*10); shard.rotation.set(Math.random()*Math.PI,Math.random()*Math.PI,Math.random()*Math.PI); g.add(shard);} return g; }
+    // ═══════════════════════════════════════════════════
+    // THREE.JS CAR SCENE (transparent over background)
+    // ═══════════════════════════════════════════════════
+    const canvas = $('#three-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.55 : 2.15));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    renderer.setClearColor(0, 0);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  let carModel=createCar(); carGroup.add(carModel); wheelGroup.add(createWheel()); garmentGroup.add(createGarment()); storeGroup.add(createStore()); sculptureGroup.add(createSculpture());
+    const scene = new THREE.Scene();
+    // NO scene.background, NO scene.fog — let the fluid background show through
 
-  function matOpacity(mat, o){ if(!mat) return; if(mat.userData.baseOpacity===undefined) mat.userData.baseOpacity = mat.opacity===undefined?1:mat.opacity; const v = mat.userData.baseOpacity*o; mat.transparent = v < .999; mat.opacity = v; mat.depthWrite = v > .65; mat.needsUpdate = true; }
-  function setOpacity(group,o){ group.visible=o>.014; group.traverse(obj=>{ if(!obj.isMesh&&!obj.isLine&&!obj.isPoints)return; (Array.isArray(obj.material)?obj.material:[obj.material]).forEach(m=>matOpacity(m,o)); }); }
-  let target={car:1,wheel:0,garment:0,store:0}, actual={car:1,wheel:0,garment:0,store:0};
-  setOpacity(wheelGroup,0); setOpacity(garmentGroup,0); setOpacity(storeGroup,0);
-  const modeValue={value:0};
-  function mode(m){ currentMode=m; if(m==='car'){target={car:1,wheel:0,garment:0,store:0};gsap.to(modeValue,{value:0,duration:.9,ease:'power3.out'});} if(m==='wheel'){target={car:.36,wheel:1,garment:0,store:0};gsap.to(modeValue,{value:.8,duration:.9,ease:'power3.out'});} if(m==='garment'){target={car:.15,wheel:0,garment:1,store:0};gsap.to(modeValue,{value:1.55,duration:.9,ease:'power3.out'});} if(m==='store'){target={car:.08,wheel:0,garment:0,store:1};gsap.to(modeValue,{value:2.3,duration:.9,ease:'power3.out'});} }
+    const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 100);
+    camera.position.set(0, 1.65, 7.4);
+    camera.lookAt(0, 0.5, 0);
 
-  const fill=$('#loaderFill'), num=$('#loaderNum'), status=$('#loaderStatus'); let initialized=false;
-  function setLoader(p,s){ fill.style.width=p+'%'; num.innerHTML=Math.round(p)+'<span style="color:var(--peach)">.</span>'; if(s)status.textContent=s; }
-  function finish(){ if(initialized)return; initialized=true; setTimeout(()=>{$('#loader').classList.add('hide'); init();},480); }
-  function centerScale(obj,targetSize=4.9){ const box=new THREE.Box3().setFromObject(obj), cen=box.getCenter(new THREE.Vector3()), size=box.getSize(new THREE.Vector3()), sc=targetSize/Math.max(size.x,size.y,size.z); obj.scale.setScalar(sc); obj.position.x=-cen.x*sc; obj.position.z=-cen.z*sc; obj.position.y=-box.min.y*sc-.52; }
-  function enhance(rootObj){ rootObj.traverse(ch=>{ if(!ch.isMesh)return; ch.castShadow=!isMobile; ch.receiveShadow=true; (Array.isArray(ch.material)?ch.material:[ch.material]).forEach(mat=>{ if(!mat)return; if(mat.color) mat.color.lerp(new THREE.Color(0x2b1838),.38); if('metalness' in mat) mat.metalness=Math.max(mat.metalness||0,.72); if('roughness' in mat) mat.roughness=Math.min(mat.roughness||.3,.20); if('clearcoat' in mat) mat.clearcoat=1; if('clearcoatRoughness' in mat) mat.clearcoatRoughness=.045; mat.needsUpdate=true; }); }); }
-  setLoader(15,'PROCEDURAL 3D READY'); const loadTimeout=setTimeout(()=>{setLoader(100,'READY');finish();},4200);
-  try { const gltf=new THREE.GLTFLoader(); const draco=new THREE.DRACOLoader(); draco.setDecoderPath('https://unpkg.com/three@0.128.0/examples/js/libs/draco/'); gltf.setDRACOLoader(draco); gltf.load('https://threejs.org/examples/models/gltf/ferrari.glb', gl=>{ clearTimeout(loadTimeout); const imported=gl.scene; centerScale(imported,4.9); enhance(imported); carGroup.remove(carModel); carModel=imported; carGroup.add(carModel); setLoader(100,'IMPORTED CAR READY'); finish(); }, xhr=>{ if(xhr.lengthComputable) setLoader(15+(xhr.loaded/xhr.total)*80,'LOADING CAR'); else setLoader(60,'STREAMING CAR'); }, ()=>{ clearTimeout(loadTimeout); setLoader(100,'PROCEDURAL READY'); finish(); }); } catch(e){ clearTimeout(loadTimeout); setLoader(100,'PROCEDURAL READY'); finish(); }
+    // Studio environment for car reflections
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
 
-  let t=0; function lerp(a,b,p){ return a+(b-a)*p; }
-  function render(){ t+=.01; bgUniforms.uTime.value=reducedMotion?t*.18:t; bgUniforms.uMouse.value.set(mouseX,1-mouseY); bgUniforms.uScroll.value=scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight); bgUniforms.uMode.value=modeValue.value; bgRenderer.render(bgScene,bgCamera);
-    actual.car=lerp(actual.car,target.car,.075); actual.wheel=lerp(actual.wheel,target.wheel,.075); actual.garment=lerp(actual.garment,target.garment,.075); actual.store=lerp(actual.store,target.store,.075);
-    setOpacity(carGroup,actual.car); setOpacity(wheelGroup,actual.wheel); setOpacity(garmentGroup,actual.garment); setOpacity(storeGroup,actual.store);
-    carGroup.position.y=Math.sin(t*1.35)*.024; wheelGroup.rotation.y+=.016; wheelGroup.rotation.z+=.004; garmentGroup.rotation.y=Math.sin(t*.8)*.22; garmentGroup.position.y=.15+Math.sin(t*1.1)*.045; storeGroup.rotation.y=Math.sin(t*.35)*.08; sculptureGroup.rotation.y=t*.045; sculptureGroup.rotation.x=Math.sin(t*.3)*.035;
-    if(currentMode==='wheel')camera.lookAt(0,.82,0); else if(currentMode==='garment')camera.lookAt(0,.88,0); else if(currentMode==='store')camera.lookAt(0,.54,0); else camera.lookAt(0,.38,0);
-    composer.render(); requestAnimationFrame(render); }
-  render();
+    // Composer with bloom
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.45, 0.35, 0.15);
+    bloomPass.threshold = 0.15;
+    bloomPass.strength = 0.45;
+    bloomPass.radius = 0.65;
+    composer.addPass(bloomPass);
+    const rgbShift = new ShaderPass(RGBShiftShader);
+    rgbShift.uniforms.amount.value = 0.00018;
+    composer.addPass(rgbShift);
 
-  function init(){
-    gsap.from('#heroKicker',{y:26,opacity:0,duration:1.2,ease:'power3.out'}); gsap.from('#heroTitle',{y:'18%',opacity:0,duration:1.7,ease:'power4.out',delay:.12});
-    if(!isMobile){ $('#hero').addEventListener('mousemove',e=>{ const r=$('#hero').getBoundingClientRect(); const x=(e.clientX-r.left)/r.width-.5; const y=(e.clientY-r.top)/r.height-.5; gsap.to('#heroTitle',{x:x*30,y:y*15,duration:1,ease:'power2.out'}); },{passive:true}); }
-    const cap=$('#machineCaption');
-    gsap.timeline({scrollTrigger:{trigger:'#machine',start:'top top',end:'bottom bottom',scrub:1.35,onEnter:()=>mode('car'),onEnterBack:()=>mode('car'),onUpdate:self=>{const p=self.progress;cap.textContent=p<.2?'Stock Outside.':p<.4?'Faster Inside.':p<.6?'OEM+ Perfected.':p<.8?'Not a render.':'A ritual.';}}})
-      .to(carGroup.rotation,{y:Math.PI*.22,duration:1,ease:'none'},0).to(camera.position,{x:3.6,y:1.35,z:5.7,duration:1,ease:'none'},0)
-      .to(carGroup.rotation,{y:Math.PI*.70,duration:1,ease:'none'},.24).to(camera.position,{x:.2,y:1.85,z:7.5,duration:1,ease:'none'},.24)
-      .to(carGroup.rotation,{y:Math.PI*1.12,duration:1,ease:'none'},.50).to(camera.position,{x:-3.6,y:1.5,z:5.4,duration:1,ease:'none'},.50)
-      .to(carGroup.rotation,{y:Math.PI*1.42,duration:1,ease:'none'},.72).to(camera.position,{x:.2,y:5.8,z:3.4,duration:1,ease:'none'},.72)
-      .to(carGroup.rotation,{y:Math.PI*1.78,duration:1,ease:'none'},.88).to(camera.position,{x:5.2,y:2.9,z:6.2,duration:1,ease:'none'},.88);
-    ScrollTrigger.create({trigger:'#tracks',start:'top 65%',end:'bottom 35%',onEnter:()=>mode('wheel'),onEnterBack:()=>mode('wheel')});
-    ScrollTrigger.create({trigger:'#garment',start:'top 65%',end:'bottom 35%',onEnter:()=>mode('garment'),onEnterBack:()=>mode('garment'),onUpdate:self=>gsap.to(camera.position,{x:2.8-self.progress*5.4,y:1.4+Math.sin(self.progress*Math.PI)*1.4,z:6.2-self.progress*.7,duration:.35,overwrite:true})});
-    ScrollTrigger.create({trigger:'#store',start:'top 65%',end:'bottom 35%',onEnter:()=>mode('store'),onEnterBack:()=>mode('store'),onUpdate:self=>gsap.to(camera.position,{x:5.2-self.progress*4.2,y:2.4+self.progress*.8,z:7.2-self.progress*2,duration:.35,overwrite:true})});
-    ScrollTrigger.create({trigger:'#manifesto',start:'top 70%',onEnter:()=>mode('car'),onEnterBack:()=>mode('car')});
-    gsap.utils.toArray('.chapter-copy,.hud,.list-hud,.product-hud,.soon-hud').forEach((el,i)=>gsap.from(el,{y:90,opacity:0,duration:1.05,delay:(i%3)*.05,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%'}}));
-    ScrollTrigger.refresh();
-  }
+    // Cinematic warm lighting
+    const ambient = new THREE.AmbientLight(0xffe8d0, 0.95);
+    scene.add(ambient);
 
-  $$('[class*="hud"],.card').forEach(card=>{ card.addEventListener('mousemove',e=>{ const r=card.getBoundingClientRect(); card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%'); card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%'); }); });
-  const menuBtn=$('#menuBtn'), menuOverlay=$('#menuOverlay'); let open=false;
-  menuBtn.addEventListener('click',()=>{ open=!open; menuBtn.classList.toggle('active',open); menuOverlay.classList.toggle('open',open); if(lenis)(open?lenis.stop():lenis.start()); gsap.to(root.rotation,{y:open?.18:0,duration:.8,ease:'power3.out'}); });
-  $$('.menu-item').forEach(item=>{ item.addEventListener('mouseenter',()=>item.dataset.mode&&mode(item.dataset.mode)); item.addEventListener('click',()=>{ const el=$(item.dataset.target); open=false; menuBtn.classList.remove('active'); menuOverlay.classList.remove('open'); if(lenis)lenis.start(); setTimeout(()=>{ if(el&&lenis)lenis.scrollTo(el,{duration:1.35}); else if(el)el.scrollIntoView({behavior:'smooth'}); },220); }); });
-  addEventListener('scroll',()=>{$('#progress').style.width=(scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight)*100)+'%';},{passive:true});
-  addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); composer.setSize(innerWidth,innerHeight); bgRenderer.setSize(innerWidth,innerHeight); bgUniforms.uResolution.value.set(innerWidth,innerHeight); ScrollTrigger.refresh(); },{passive:true});
-})();
-</script>
+    const keyLight = new THREE.SpotLight(0xfff0e0, 220, 35, Math.PI / 5, 0.6, 1);
+    keyLight.position.set(8, 8, 8);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(2048, 2048);
+    keyLight.shadow.bias = -0.0002;
+    scene.add(keyLight);
+
+    const rimLight = new THREE.SpotLight(0xffb5a7, 140, 28, Math.PI / 4, 0.7, 1);
+    rimLight.position.set(-7, 4, -4);
+    scene.add(rimLight);
+
+    const fillLight = new THREE.PointLight(0xd4b5a8, 35, 22);
+    fillLight.position.set(4, 2.5, 5);
+    scene.add(fillLight);
+
+    const underGlow = new THREE.PointLight(0xffb5a7, 55, 18, 0.5);
+    underGlow.position.set(0, -0.8, 1.5);
+    scene.add(underGlow);
+
+    const accentLight = new THREE.PointLight(0xe8a598, 40, 18);
+    accentLight.position.set(-5, 3, 3);
+    scene.add(accentLight);
+
+    const topLight = new THREE.SpotLight(0xffffff, 80, 25, Math.PI / 6, 0.5, 1);
+    topLight.position.set(0, 10, 0);
+    topLight.castShadow = true;
+    scene.add(topLight);
+
+    // ═══════════════════════════════════════════════════
+    // NO floor, NO product scene, NO structure.
+    // Only elegant ring sculpture + flowing particles
+    // ═══════════════════════════════════════════════════
+
+    // Elegant floating ring (subtle sculpture, no floor collision)
+    const ringMat = new THREE.MeshPhysicalMaterial({
+      color: 0xffb5a7,
+      metalness: 0.95,
+      roughness: 0.05,
+      clearcoat: 0.9,
+      emissive: 0x4a2818,
+      emissiveIntensity: 0.3
+    });
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(1.55, 0.03, 48, 140), ringMat);
+    ring.position.set(-2.85, 2.5, -1.5);
+    ring.rotation.set(0.65, -0.22, 0.12);
+    scene.add(ring);
+
+    const innerRingMat = new THREE.MeshPhysicalMaterial({
+      color: 0xe8dcc8,
+      metalness: 0.92,
+      roughness: 0.08,
+      emissive: 0x3a2010,
+      emissiveIntensity: 0.2
+    });
+    const innerRing = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.02, 48, 120), innerRingMat);
+    innerRing.position.set(-2.85, 2.5, -1.5);
+    innerRing.rotation.set(0.65 + Math.PI / 2, -0.22, 0.12);
+    scene.add(innerRing);
+
+    // Floating shards (subtle, drifting)
+    const floatingShards = new THREE.Group();
+    for (let i = 0; i < 12; i++) {
+      const geo = new THREE.IcosahedronGeometry(0.08 + Math.random() * 0.18, 1);
+      const mat = new THREE.MeshPhysicalMaterial({
+        color: new THREE.Color().setHSL(0.04 + Math.random() * 0.08, 0.55, 0.6 + Math.random() * 0.25),
+        metalness: 0.92,
+        roughness: 0.08,
+        clearcoat: 0.7,
+        opacity: 0.55,
+        transparent: true
+      });
+      const shard = new THREE.Mesh(geo, mat);
+      shard.position.set((Math.random() - 0.5) * 8, 1 + Math.random() * 4, -3 + Math.random() * 3);
+      shard.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+      shard.userData.seed = Math.random() * 10;
+      floatingShards.add(shard);
+    }
+    scene.add(floatingShards);
+
+    // Flowing particles (warm, drifting)
+    const pGeo = new THREE.BufferGeometry();
+    const pCount = isMobile ? 200 : 500;
+    const pPos = new Float32Array(pCount * 3);
+    for (let i = 0; i < pCount; i++) {
+      pPos[i * 3] = (Math.random() - 0.5) * 20;
+      pPos[i * 3 + 1] = Math.random() * 8 - 2;
+      pPos[i * 3 + 2] = (Math.random() - 0.5) * 18;
+    }
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({
+      color: 0xffd2b6,
+      size: 0.022,
+      transparent: true,
+      opacity: 0.5,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    }));
+    scene.add(particles);
+
+    // ═══════════════════════════════════════════════════
+    // CAR SYSTEM — one active car at a time, no overlap
+    // ═══════════════════════════════════════════════════
+    const carRegistry = [];
+    const loader = new GLTFLoader();
+    const draco = new DRACOLoader();
+    draco.setDecoderPath('https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/gltf/');
+    loader.setDRACOLoader(draco);
+
+    const CAR_MODELS = [
+      { name: 'Ferrari', key: 'ferrari', url: 'https://threejs.org/examples/models/gltf/ferrari.glb', priority: 0, tint: 0x2b0d06 },
+      { name: 'BMW M4', key: 'bmw', url: 'https://raw.githubusercontent.com/coopercodes/bmwGLB/main/bmw_m4_competition_m_package.glb', priority: 1, tint: 0x21140e },
+      { name: 'Lamborghini', key: 'lambo', url: 'https://raw.githubusercontent.com/ramjigeddam/3d/master/Lamborginhi%20Aventador_test.glb', priority: 2, tint: 0x27110b }
+    ];
+
+    function tune(mat, tint, name = '') {
+      if (!mat) return;
+      const n = ((mat.name || '') + ' ' + name).toLowerCase();
+      mat.envMapIntensity = 1.3;
+      if (n.includes('glass') || n.includes('window')) {
+        mat.transparent = true;
+        mat.opacity = 0.55;
+        mat.roughness = 0.05;
+        mat.metalness = 0.15;
+        if ('transmission' in mat) mat.transmission = 0.4;
+      } else {
+        if (n.includes('body') || n.includes('paint') || n.includes('carpaint')) {
+          mat.color = new THREE.Color(tint);
+        }
+        mat.roughness = Math.min(mat.roughness || 0.3, 0.15);
+        mat.metalness = Math.max(mat.metalness || 0.5, 0.78);
+        if ('clearcoat' in mat) {
+          mat.clearcoat = 0.95;
+          mat.clearcoatRoughness = 0.04;
+        }
+      }
+      mat.needsUpdate = true;
+    }
+
+    function normalizeCar(raw, def) {
+      const root = raw.clone(true);
+      root.traverse(o => {
+        if (o.isMesh) {
+          o.castShadow = true;
+          o.receiveShadow = true;
+          if (Array.isArray(o.material)) {
+            o.material = o.material.map(m => { const c = m.clone(); tune(c, def.tint, o.name); return c; });
+          } else {
+            o.material = o.material.clone();
+            tune(o.material, def.tint, o.name);
+          }
+        }
+      });
+      const box = new THREE.Box3().setFromObject(root);
+      const size = new THREE.Vector3();
+      const center = new THREE.Vector3();
+      box.getSize(size);
+      box.getCenter(center);
+      const scale = (def.key === 'bmw' ? 3.68 : 3.88) / Math.max(size.x, size.y, size.z);
+      root.scale.setScalar(scale);
+      // Position car so it floats above the "floor" line (y=0 is where ground would be)
+      root.position.set(-center.x * scale, -box.min.y * scale + 0.05, -center.z * scale);
+      const wrap = new THREE.Group();
+      wrap.name = def.name;
+      wrap.add(root);
+      wrap.userData = {
+        name: def.name,
+        priority: def.priority,
+        opacity: 0,
+        targetOpacity: 0,
+        active: false,
+        center: new THREE.Vector3(0, 0, 0)
+      };
+      wrap.visible = false;
+      scene.add(wrap);
+      return wrap;
+    }
+
+    function setOpacity(obj, op) {
+      obj.traverse(o => {
+        if (o.isMesh && o.material) {
+          const arr = Array.isArray(o.material) ? o.material : [o.material];
+          arr.forEach(m => {
+            if (!m.userData.keepOpaque) {
+              m.transparent = true;
+              m.opacity = op;
+              m.needsUpdate = true;
+            }
+          });
+        }
+      });
+    }
+
+    function loadCar(def) {
+      return new Promise(resolve => {
+        loader.load(def.url, gltf => {
+          const car = normalizeCar(gltf.scene, def);
+          carRegistry.push(car);
+          carRegistry.sort((a, b) => a.userData.priority - b.userData.priority);
+          showStatus(def.name + ' LOADED', 1600);
+          console.log('✅', def.name);
+          resolve(car);
+        }, undefined, err => {
+          console.error('❌', def.name, err);
+          showStatus(def.name + ' FAILED · CONTINUING', 1800);
+          resolve(null);
+        });
+      });
+    }
+
+    (async () => {
+      showStatus('LOADING MACHINES', 3000);
+      await Promise.allSettled(CAR_MODELS.map(loadCar));
+      if (!carRegistry.length) showStatus('NO MODEL LOADED', 5000);
+      else showStatus(carRegistry.length + ' MACHINE' + (carRegistry.length > 1 ? 'S' : '') + ' READY', 2600);
+    })();
+
+    // ═══════════════════════════════════════════════════
+    // LENIS + SCROLL
+    // ═══════════════════════════════════════════════════
+    const lenis = new Lenis({
+      duration: 1.38,
+      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      smoothTouch: true,
+      touchMultiplier: 1.55
+    });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(t => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+    window.addEventListener('mousemove', e => {
+      mouse.tx = e.clientX / innerWidth * 2 - 1;
+      mouse.ty = -(e.clientY / innerHeight) * 2 + 1;
+      bgUniforms.uMouse.value.set(e.clientX / innerWidth, 1 - e.clientY / innerHeight);
+    });
+    window.addEventListener('touchmove', e => {
+      if (e.touches.length > 0) {
+        mouse.tx = e.touches[0].clientX / innerWidth * 2 - 1;
+        mouse.ty = -(e.touches[0].clientY / innerHeight) * 2 + 1;
+        bgUniforms.uMouse.value.set(e.touches[0].clientX / innerWidth, 1 - e.touches[0].clientY / innerHeight);
+      }
+    }, { passive: true });
+
+    function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+    function smoothstep(a, b, x) { x = clamp01((x - a) / (b - a)); return x * x * (3 - 2 * x); }
+    function frac() {
+      const h = document.body.scrollHeight - innerHeight;
+      return h > 0 ? clamp01((lenis.scroll || scrollY) / h) : 0;
+    }
+
+    function activeCarIndex(f) {
+      const n = carRegistry.length;
+      if (n <= 1) return 0;
+      if (f > 0.84) return 0;
+      return Math.min(n - 1, Math.floor(clamp01(f * 1.05) * n));
+    }
+
+    function updateCars(f) {
+      if (!carRegistry.length) return;
+      const active = activeCarIndex(f);
+      carRegistry.forEach((car, i) => {
+        const on = i === active;
+        car.userData.targetOpacity = on ? 1 : 0;
+        car.userData.active = on;
+        car.visible = car.userData.opacity > 0.02 || on;
+        const side = (i - active) * 5.2;
+        car.userData.center.set(on ? 0 : side, on ? 0 : 0.3, on ? 0 : -2.8);
+      });
+    }
+
+    // ═══════════════════════════════════════════════════
+    // ANIMATE
+    // ═══════════════════════════════════════════════════
+    function animate() {
+      requestAnimationFrame(animate);
+      const f = frac();
+
+      // Update background shader
+      bgUniforms.uTime.value = performance.now() * 0.001;
+      bgUniforms.uScroll.value = f;
+      bgRenderer.render(bgScene, bgCamera);
+
+      updateCars(f);
+
+      // Smooth mouse
+      mouse.x += (mouse.tx - mouse.x) * 0.045;
+      mouse.y += (mouse.ty - mouse.y) * 0.045;
+
+      // Cinematic camera orbit
+      const orbit = f * Math.PI * 1.48;
+      const targetX = Math.sin(orbit) * 3.55 + mouse.x * 0.72;
+      const targetY = 1.35 + f * 1.62 - mouse.y * 0.32;
+      const targetZ = 6.55 - f * 0.92 + Math.cos(orbit) * 0.55;
+      camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), 0.035);
+      camera.lookAt(0, 0.32 + f * 0.35, -0.1);
+
+      // Car animations
+      carRegistry.forEach(car => {
+        const ud = car.userData;
+        ud.opacity += (ud.targetOpacity - ud.opacity) * 0.085;
+        car.position.lerp(ud.center, 0.065);
+        const targetRot = orbit * 0.62 + mouse.x * 0.18;
+        car.rotation.y += (targetRot - car.rotation.y) * 0.045;
+        const s = car.scale.x + ((ud.active ? 1.03 : 0.96) - car.scale.x) * 0.06;
+        car.scale.setScalar(s);
+        if (ud.opacity < 0.02 && !ud.active) car.visible = false;
+        setOpacity(car, ud.opacity);
+      });
+
+      // Ring sculpture
+      ring.rotation.z += 0.0011;
+      ring.rotation.y += 0.0009;
+      ring.position.y = 2.5 + Math.sin(f * Math.PI * 2) * 0.25;
+      innerRing.rotation.z -= 0.0015;
+      innerRing.rotation.y -= 0.0012;
+      innerRing.position.y = 2.5 + Math.sin(f * Math.PI * 2) * 0.25;
+
+      // Floating shards drift
+      floatingShards.children.forEach((s, i) => {
+        const seed = s.userData.seed;
+        s.position.y += Math.sin(performance.now() * 0.0005 + seed) * 0.002;
+        s.rotation.x += 0.002;
+        s.rotation.y += 0.0015;
+      });
+
+      // Particles
+      particles.rotation.y += 0.00035;
+      particles.position.y = Math.sin(f * Math.PI) * 0.2;
+
+      // Lighting reacts to scroll
+      underGlow.intensity = 55 + Math.sin(f * Math.PI * 3) * 18;
+      bloomPass.strength = 0.45 + smoothstep(0.45, 0.95, f) * 0.2;
+      rgbShift.uniforms.amount.value = 0.00015 + smoothstep(0.45, 0.95, f) * 0.00012;
+
+      composer.render();
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      renderer.setSize(innerWidth, innerHeight);
+      composer.setSize(innerWidth, innerHeight);
+      bgRenderer.setSize(innerWidth, innerHeight);
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      bgUniforms.uResolution.value.set(innerWidth, innerHeight);
+    });
+
+    // ═══════════════════════════════════════════════════
+    // GSAP ENTRANCE
+    // ═══════════════════════════════════════════════════
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.fromTo('.hero-brand', { y: 54, opacity: 0, filter: 'blur(14px)' }, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.3, ease: 'power4.out' });
+    gsap.fromTo('.hero-slogan,.hero-sub,.hero-ctas', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: 0.12, delay: 0.42, ease: 'power3.out' });
+    $$('.track-item').forEach((el, i) => gsap.fromTo(el, { x: -34, opacity: 0 }, { x: 0, opacity: 1, duration: 0.75, delay: i * 0.08, ease: 'power3.out', scrollTrigger: { trigger: '#section-track', start: 'top 76%' } }));
+    $$('.shop-tile,.proof-block,.match-option').forEach((el, i) => gsap.fromTo(el, { y: 34, opacity: 0 }, { y: 0, opacity: 1, duration: 0.72, delay: (i % 4) * 0.06, ease: 'power3.out', scrollTrigger: { trigger: el.closest('section'), start: 'top 78%' } }));
+
+    // Section titles
+    $$('.title-large, .section-label').forEach(el => {
+      gsap.fromTo(el, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 80%' } });
+    });
+
+    // ═══════════════════════════════════════════════════
+    // NAV
+    // ═══════════════════════════════════════════════════
+    const ids = ['hero', 'track', 'machine', 'shop', 'match', 'proof', 'space'];
+    const labels = {
+      hero: 'STOCK OUTSIDE', track: 'TRACK TO MACHINE', machine: 'THE MACHINE',
+      shop: 'SHOP PREVIEW', match: 'THE MATCH', proof: 'BKIT PROOF', space: 'OFFLINE SPACE'
+    };
+    function updateNav() {
+      const st = lenis.scroll || scrollY;
+      let active = 'hero';
+      ids.forEach(id => {
+        const sec = $('#section-' + id);
+        if (sec && st + innerHeight * 0.48 >= sec.offsetTop && st + innerHeight * 0.48 < sec.offsetTop + sec.offsetHeight) active = id;
+      });
+      $$('.dock-item').forEach(btn => btn.classList.toggle('active', btn.dataset.target === active));
+      $('#sceneLabel').textContent = labels[active] || '';
+    }
+    lenis.on('scroll', updateNav);
+    updateNav();
+
+    $$('.dock-item').forEach(btn => btn.addEventListener('click', () => lenis.scrollTo($('#section-' + btn.dataset.target), { duration: 1.55 })));
+    $$('[data-scroll-to]').forEach(btn => btn.addEventListener('click', () => lenis.scrollTo($('#section-' + btn.dataset.scrollTo), { duration: 1.45 })));
+
+    // ═══════════════════════════════════════════════════
+    // PANELS & MODALS
+    // ═══════════════════════════════════════════════════
+    const overlay = $('#panelOverlay'), detail = $('#detailPanel'), shopModal = $('#shopModal'), proofModal = $('#proofModal');
+    function openLayer(el) { el.classList.add('open'); overlay.classList.add('active'); document.body.classList.add('panel-open'); lenis.stop(); }
+    function closeAll() { detail.classList.remove('open'); shopModal.classList.remove('open'); proofModal.classList.remove('open'); overlay.classList.remove('active'); document.body.classList.remove('panel-open'); lenis.start(); }
+    overlay.addEventListener('click', closeAll);
+    $('#detailClose').addEventListener('click', closeAll);
+    $('#shopClose').addEventListener('click', closeAll);
+    $('#proofClose').addEventListener('click', closeAll);
+    addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+
+    const trackData = [
+      { num: '001', title: 'My City', car: 'Dodge Charger', mood: 'night prowl', desc: 'A midnight anthem rolling through empty downtown streets. The machine appears calm outside, but every reflection feels ready to move.', status: 'Published', caption: 'TEAMBKIT 001 · My City × Dodge Charger · night prowl · STOCK OUTSIDE. FASTER INSIDE. @teambkit.official' },
+      { num: '002', title: 'Blank Space', car: 'Chevrolet Camaro', mood: 'open road', desc: 'A clean sky, a quiet road, and a car that turns blank space into speed.', status: 'Published', caption: 'TEAMBKIT 002 · Blank Space × Chevrolet Camaro · open road · @teambkit.official' },
+      { num: '003', title: 'In and Out of Love', car: 'Audi R8', mood: 'twilight chase', desc: 'German precision with emotional blur. The R8 moves like a memory you almost caught.', status: 'Published', caption: 'TEAMBKIT 003 · In and Out of Love × Audi R8 · twilight chase · @teambkit.official' },
+      { num: '004', title: 'Abracadabra', car: 'Toyota GR86', mood: 'mountain run', desc: 'Lightweight magic on a warm evening road. The GR86 disappears into the curve and returns as culture.', status: 'Concept', caption: 'TEAMBKIT 004 · Abracadabra × Toyota GR86 · mountain run · @teambkit.official' }
+    ];
+    let currentTrack = null;
+    $('#trackList').addEventListener('click', e => {
+      const item = e.target.closest('.track-item');
+      if (!item) return;
+      const d = trackData[+item.dataset.track];
+      currentTrack = d;
+      $('#dpNum').textContent = d.num;
+      $('#dpTitle').textContent = d.title;
+      $('#dpCar').textContent = d.car;
+      $('#dpMood').textContent = d.mood;
+      $('#dpDesc').textContent = d.desc;
+      $('#dpStatus').textContent = d.status;
+      $('#dpCopyCaption').textContent = 'Copy Caption';
+      openLayer(detail);
+    });
+    $('#dpViewMachine').addEventListener('click', () => { closeAll(); lenis.scrollTo($('#section-machine'), { duration: 1.25 }); });
+    $('#dpCopyCaption').addEventListener('click', async () => {
+      if (!currentTrack) return;
+      try { await navigator.clipboard.writeText(currentTrack.caption); } catch {}
+      $('#dpCopyCaption').textContent = 'COPIED';
+      setTimeout(() => $('#dpCopyCaption').textContent = 'Copy Caption', 1800);
+    });
+
+    const productData = {
+      sticker: { name: 'BKIT Sticker', status: 'UV DTF / Prototype', desc: 'Glossy transparent film for glass, body, and showroom display. Built for a clean OEM+ look.' },
+      apparel: { name: 'BKIT Apparel', status: 'Hoodie / Tee / Cap', desc: 'Warm cream, espresso black, champagne logo. Apparel becomes the human side of the machine.' },
+      keytag: { name: 'BKIT Key Tag', status: 'Numbered Drop', desc: 'Metal or acrylic numbered key tag with a subtle BKIT identity code.' },
+      plate: { name: 'BKIT Proof Plate', status: 'QR Identity', desc: 'A physical proof plate for future verified builds and TEAMBKIT offline events.' }
+    };
+    $('#shopGrid').addEventListener('click', e => {
+      const tile = e.target.closest('.shop-tile');
+      if (!tile) return;
+      const d = productData[tile.dataset.product];
+      $('#smName').textContent = d.name;
+      $('#smStatus').textContent = d.status;
+      $('#smDesc').textContent = d.desc;
+      $('#smNotify').textContent = 'Notify Me';
+      openLayer(shopModal);
+    });
+    $('#smNotify').addEventListener('click', () => {
+      $('#smNotify').textContent = 'ADDED TO WAITLIST';
+      setTimeout(() => $('#smNotify').textContent = 'Notify Me', 2600);
+    });
+
+    const proofData = {
+      register: { name: 'Register', status: 'Live · Beta', desc: 'Register vehicle identity and build records as a future-proof digital profile.', future: 'Future: AI-assisted build documentation.' },
+      verify: { name: 'Verify', status: 'In Development', desc: 'Authenticate parts, concept ownership, and provenance history.', future: 'Future: real-time provenance and event verification.' },
+      display: { name: 'Display', status: 'Coming Soon', desc: 'Show QR-based digital proof on plates, stickers, cards, and offline displays.', future: 'Future: AR show mode for pop-up events.' }
+    };
+    $('#proofBlocks').addEventListener('click', e => {
+      const block = e.target.closest('.proof-block');
+      if (!block) return;
+      const d = proofData[block.dataset.proof];
+      $('#pmName').textContent = d.name;
+      $('#pmStatus').textContent = d.status;
+      $('#pmDesc').textContent = d.desc;
+      $('#pmFuture').textContent = d.future;
+      openLayer(proofModal);
+    });
+
+    let vA = 0, vB = 0, voted = false;
+    function animatePct(el, target) {
+      const cur = parseInt(el.textContent) || 0, diff = target - cur, start = performance.now();
+      function step(t) {
+        const p = Math.min(1, (t - start) / 680), e = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(cur + diff * e) + '%';
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    function vote(opt) {
+      if (voted) return;
+      voted = true;
+      if (opt === 'A') { vA++; $('#optionA').classList.add('selected'); }
+      else { vB++; $('#optionB').classList.add('selected'); }
+      const total = vA + vB;
+      animatePct($('#pctA'), Math.round(vA / total * 100));
+      animatePct($('#pctB'), Math.round(vB / total * 100));
+      $('#pctA').classList.add('show');
+      $('#pctB').classList.add('show');
+    }
+    $('#optionA').addEventListener('click', () => vote('A'));
+    $('#optionB').addEventListener('click', () => vote('B'));
+    $('#matchReset').addEventListener('click', () => {
+      vA = 0; vB = 0; voted = false;
+      $('#pctA').textContent = '0%'; $('#pctB').textContent = '0%';
+      $('#pctA').classList.remove('show'); $('#pctB').classList.remove('show');
+      $('#optionA').classList.remove('selected'); $('#optionB').classList.remove('selected');
+    });
+
+    $('#notifyForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const input = $('#emailInput');
+      if (input.value.trim() && input.checkValidity()) {
+        input.disabled = true;
+        $('#notifyBtn').textContent = 'REGISTERED';
+        $('#notifyBtn').classList.add('registered');
+        setTimeout(() => {
+          input.disabled = false;
+          input.value = '';
+          $('#notifyBtn').textContent = 'Notify Me';
+          $('#notifyBtn').classList.remove('registered');
+        }, 3600);
+      }
+    });
+
+    console.log('%c TEAMBKIT %c RACE TO BE THE STAR ',
+      'background:#FFB5A7;color:#1a0d08;padding:6px 12px;font-weight:900;font-size:1.1em;',
+      'background:#1a0d08;color:#FFB5A7;padding:6px 12px;font-family:serif;font-style:italic;');
+  </script>
 </body>
 </html>
+```
